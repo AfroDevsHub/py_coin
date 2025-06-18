@@ -4,7 +4,7 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import TransactionError
+from lib.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
 from models.blockchain.transactions import Transaction
 from serialisers.blockchain.transactions import TransactionSerialiser

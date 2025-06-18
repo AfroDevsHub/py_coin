@@ -1,10 +1,10 @@
 """Serialiser: Base Serialiser for model Model."""
 
-from enum import Enum, EnumMeta
+from enum import Enum, EnumMeta, EnumType
 from json import dumps
 from typing import Any, Tuple, Union
 
-from lib.interfaces.exceptions import ApplicationError
+from lib.exceptions import ApplicationError
 from lib.utils.encryption.cryptography import encrypt_data
 from lib.validators.blocks import (
     validate_block_next,
@@ -89,8 +89,19 @@ class BaseSerialiser:
         if not nullable and value is None:
             raise self.__SERIALISER_EXCEPTION__("Non-Nullable Attribute.")
 
+        if (
+            isinstance(data_type, EnumType)
+            and hasattr(data_type, "__dict__")
+            and isinstance(data_type.__dict__, dict)
+            and value in data_type.__dict__.get("_value2member_map_", {})
+        ):
+            return data_type.__dict__["_value2member_map_"][value]
+
         if not isinstance(value, data_type) and value is not None:
-            raise self.__SERIALISER_EXCEPTION__("Invalid Type for this Attribute.")
+
+            raise self.__SERIALISER_EXCEPTION__(
+                f"Invalid Type for this Attribute. Expected {data_type} but got {value}"
+            )
 
         if validator is not None and hasattr(validator, "__call__"):
             value = validator(value, model=model)

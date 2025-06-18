@@ -5,7 +5,8 @@ from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from lib.interfaces.exceptions import UserProfileError
+from lib.exceptions import UserProfileError
+from lib.types.user import ProfileData
 from models import ENGINE
 from models.user.profiles import UserProfile
 from serialisers.serialiser import BaseSerialiser
@@ -58,7 +59,7 @@ class UserProfileSerialiser(UserProfile, BaseSerialiser):
 
             return str(self)
 
-    def update_user_profile(self, private_id: UUID, **kwargs) -> str:
+    def update_user_profile(self, private_id: UUID, data: ProfileData) -> str:
         """CRUD Operation: Update User Profile."""
 
         with Session(ENGINE) as session:
@@ -69,11 +70,7 @@ class UserProfileSerialiser(UserProfile, BaseSerialiser):
             if user_profile is None:
                 raise UserProfileError("User Profile Not Found.")
 
-            for key, value in kwargs.items():
-                if key not in UserProfileSerialiser.__MUTABLE_KWARGS__:
-                    raise UserProfileError("Invalid User Profile.")
-
-                value = self.validate_serialiser_kwargs(key, value)
+            for key, value in data.model_dump().items():
                 setattr(user_profile, key, value)
             try:
                 session.add(user_profile)

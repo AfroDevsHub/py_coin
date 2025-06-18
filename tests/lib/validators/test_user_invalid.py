@@ -4,7 +4,7 @@ from datetime import date, datetime
 from random import randint
 
 from pytest import mark, raises
-from lib.interfaces.exceptions import (
+from lib.exceptions import (
     CardValidationError,
     PaymentProfileError,
     SettingsProfileError,

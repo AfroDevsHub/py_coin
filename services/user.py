@@ -3,8 +3,8 @@
 from typing import Optional
 from uuid import UUID
 from lib.decorators.utils import validate_function_signature
-from lib.interfaces.responses import ServiceResponse
-from lib.interfaces.data_classes import UserData
+from lib.responses import ServiceResponse
+from lib.types.user import UserData
 from lib.utils.constants.responses import ServiceStatus
 from serialisers.user.accounts import AccountSerialiser
 from serialisers.user.profiles import UserProfileSerialiser
@@ -25,7 +25,6 @@ class UserService(AbstractService):
         return cls.__instance__
 
     @classmethod
-    @validate_function_signature(True)
     def create_user_account(cls, user_id: UUID, user_data: UserData):
         """Creates an Account for a given User."""
 
@@ -37,7 +36,7 @@ class UserService(AbstractService):
         profile_id = cls.get_public_id(response)
         profile = UserProfileSerialiser().get_user_profile(profile_id)
 
-        response = SettingsProfileSerialiser().create_settings_profile(account_id)
+        response = SettingsProfileSerialiser().create_settings_profile(account["id"])
         settings_id = cls.get_public_id(response)
         settings = SettingsProfileSerialiser().get_settings_profile(settings_id)
 
@@ -52,7 +51,6 @@ class UserService(AbstractService):
         )
 
     @classmethod
-    @validate_function_signature(True)
     def update_user_account(
         cls,
         user_data: UserData,
@@ -63,29 +61,26 @@ class UserService(AbstractService):
         """Updates a User's Account."""
 
         if account_id:
-            AccountSerialiser().update_account(
-                account_id, **user_data.account.to_dict()
-            )
+            AccountSerialiser().update_account(account_id, **user_data.get("account"))
         if profile_id:
             UserProfileSerialiser().update_user_profile(
-                profile_id, **user_data.profile.to_dict()
+                profile_id, **user_data.get("profile")
             )
         if settings_id:
             SettingsProfileSerialiser().update_settings_profile(
-                settings_id, **user_data.settings.to_dict()
+                settings_id, **user_data.get("settings")
             )
         return ServiceResponse(
             "User Account Successfully Updated.",
             ServiceStatus.SUCCESS,
             {
-                "account": user_data.account.to_dict(),
-                "profile": user_data.profile.to_dict(),
-                "settings": user_data.settings.to_dict(),
+                "account": user_data.get("account"),
+                "profile": user_data.get("profile"),
+                "settings": user_data.get("settings"),
             },
         )
 
     @classmethod
-    @validate_function_signature(True)
     def get_user_account(cls, account_id: str) -> ServiceResponse:
         """Finds a Valid User Account."""
 

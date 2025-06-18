@@ -3,8 +3,12 @@
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from enum import Enum
 from json import dumps, loads
+import json
+import sys
 import textwrap
-from typing import Any, List, Type, Union, get_type_hints
+from types import UnionType
+from typing import Any, Type, Union, get_type_hints
+from uuid import UUID
 from pyinputplus import (
     inputMenu,
     inputStr,
@@ -12,24 +16,20 @@ from pyinputplus import (
     inputFloat,
     inputInt,
     inputYesNo,
-    inputDatetime,
+    inputDate,
 )
-from sqlalchemy import DateTime
+from datetime import datetime
 
-from lib.interfaces.cli import Args, CLIError
-from lib.interfaces.exceptions import ApplicationError
-from lib.interfaces.typed_dicts import (
-    AccountDict,
-    ContractDict,
-    UserDict,
-    ProfileDict,
-    SettingsDict,
-    TransactionDict,
-)
-from lib.interfaces.data_classes import UserData
+
+from lib.exceptions import ApplicationError, CLIError
+from lib.types.blockchain import ContractData, TransactionData
+from lib.types.cli import Args
+from lib.types.user import AccountData, Logindata, ProfileData, SettingsData, UserData
 from lib.utils.constants.users import SocialMediaLink
+from lib.utils.encryption.cryptography import decrypt_data
 from services.blockchain import BlockChainService
 from services.authentication import AuthenticationService
+from services.user import UserService
 
 
 class Cli:
@@ -189,33 +189,56 @@ class Cli:
 
         if len(data) != 1:
             return "Invalid Command - Try *help*"
-        arg_data = {}
-        if args.data:
-            arg_data = cls.__get_arg_data__()
 
         match (args.command):
             case "create":
                 if args.transaction:
+                    arg_data = cls.__get_arg_data__("transaction")
                     return (
                         BlockChainService()
                         .create_transaction(
-                            args.sender, args.receiver, arg_data["amount"]
+                            UUID(args.sender),
+                            UUID(args.receiver),
+                            float(arg_data["amount"]),
                         )
                         .to_dict()
                     )
                 if args.contract:
+                    arg_data = cls.__get_arg_data__("contract")
                     with open(arg_data["contract"], "r") as file:
                         return (
                             BlockChainService()
-                            .create_contract(args.sender, args.receiver, file.read())
+                            .create_contract(
+                                UUID(args.sender), UUID(args.receiver), file.read()
+                            )
                             .to_dict()
                         )
                 if args.user:
-                    return (
-                        AuthenticationService()
-                        .register_user(arg_data["email"], arg_data["password"])
-                        .to_dict()
+                    arg_data = cls.__get_arg_data__("user")
+                    response = AuthenticationService().register_user(
+                        arg_data["email"], arg_data["password"]
                     )
+                    user = json.loads(decrypt_data(response.data.get("user")))
+                    proceed = inputYesNo(
+                        "Create a User Profile? (Yes/No): ", default="yes"
+                    )
+                    profiles = ["profile", "account", "settings"]
+
+                    if proceed == "no":
+                        return response.message
+
+                    data = {}
+                    for profile in profiles:
+                        arg_data = cls.__get_arg_data__(profile)
+                        data[profile] = arg_data
+
+                    user_profile = UserService().create_user_account(
+                        UUID(user["id"]), data
+                    )
+
+                    return user_profile
+                    # return user.to_dict()
+                    # account = UserService().create_user_account(user.)
             case "update":
                 if args.transaction:
                     return (
@@ -241,6 +264,9 @@ class Cli:
                     )
                 if args.block:
                     return BlockChainService().append_block_chain(args.uuid).to_dict()
+
+                # if args.user:
+                #     return UserService().create_user_account()
             case "read":
                 if args.user:
                     return (
@@ -267,7 +293,7 @@ class Cli:
 
                     if command == "kill":
                         cls.kill()
-                        continue
+                        break
 
                     # Parse the input command and handle it
                     args = cls.parser.parse_args(command.split())
@@ -275,7 +301,8 @@ class Cli:
                     print(parsed_args)
             except (KeyboardInterrupt, CLIError):
                 raise CLIError("CLI Server Was Terminated.")
-            except (SystemExit, EOFError, ApplicationError):
+            except (SystemExit, EOFError, ApplicationError) as e:
+                print(e)
                 continue
 
     @classmethod
@@ -332,21 +359,18 @@ class Cli:
             subparser.add_argument(*arg["args"], **arg["kwargs"])
 
     @staticmethod
-    def __get_arg_data__() -> dict:
-        args = {
-            "user": UserDict,
-            "profile": ProfileDict,
-            "account": AccountDict,
-            "settings": SettingsDict,
-            "contract": ContractDict,
-            "transaction": TransactionDict,
+    def __get_arg_data__(model: str) -> dict:
+        models = {
+            "user": Logindata,
+            "profile": ProfileData,
+            "account": AccountData,
+            "settings": SettingsData,
+            "contract": ContractData,
+            "transaction": TransactionData,
         }
         data = {}
-        selected_model = inputMenu(
-            list(args.keys()), "Choose a Data Type:\n", numbered=True
-        )
 
-        for key, annotation in get_type_hints(args[selected_model]).items():
+        for key, annotation in get_type_hints(models[model]).items():
             while True:
                 try:
                     response = Cli.get_input_for_annotation(key, annotation)
@@ -354,21 +378,38 @@ class Cli:
                     break
                 except ValueError as e:
                     print(f"Invalid input for {key} (expected {annotation}): {e}")
-
         return data
 
     @staticmethod
     def get_input_for_annotation(field_name: str, annotation: Type) -> Any:
+        models = {
+            "user": UserData,
+            "profile": ProfileData,
+            "account": AccountData,
+            "settings": SettingsData,
+            "contract": ContractData,
+            "transaction": TransactionData,
+        }
+
         origin = getattr(annotation, "__origin__", None)
-        if origin is Union and type(None) in annotation.__args__:
+        if (isinstance(annotation, UnionType) or origin is Union) and type(
+            None
+        ) in annotation.__args__:
             annotation = annotation.__args__[0]  # Get the type inside Optional
+
+        if annotation in models.values():
+            for key, value in models.items():
+                print(annotation, models.values(), value, key)
+                if value == annotation:
+                    return Cli.__get_arg_data__(key)
+            raise CLIError("Invalid Annotation.")
 
         if origin is list:
             item_type = annotation.__args__[0]
             list_items = []
             while True:
                 input_value = inputStr(
-                    f"Enter a value for {field_name.title()} (leave empty to finish): ",
+                    f"Enter a value for {field_name.title().replace("_", " ")} (leave empty to finish): ",
                     blank=True,
                 )
                 if input_value == "":
@@ -381,7 +422,7 @@ class Cli:
             dict_items = {}
             while True:
                 key_input = inputStr(
-                    f"Enter a key for {field_name.title()} (leave empty to finish): ",
+                    f"Enter a key for {field_name.title().replace("_", " ")} (leave empty to finish): ",
                     blank=True,
                 )
                 if key_input == "":
@@ -410,7 +451,7 @@ class Cli:
                 return input_dict
             response = inputMenu(
                 [dumps(e.value) for e in annotation],
-                prompt=f"{field_name.title()}:\n",
+                prompt=f"{field_name.title().replace("_", " ")}:\n",
                 numbered=True,
                 blank=True,
             )
@@ -420,18 +461,26 @@ class Cli:
 
         response = None
         if annotation is int:
-            response = inputInt(f"{field_name.title()} = ", blank=True)
+            response = inputInt(f"{field_name.title().replace("_", " ")}: ", blank=True)
         elif annotation is float:
-            response = inputFloat(f"{field_name.title()} = ", blank=True)
+            response = inputFloat(
+                f"{field_name.title().replace("_", " ")}: ", blank=True
+            )
         elif annotation is bool:
-            response = inputBool(f"{field_name.title()} = ", blank=True)
+            response = inputBool(
+                f"{field_name.title().replace("_", " ")}: ", blank=True
+            )
         elif annotation is str:
-            response = inputStr(f"{field_name.title()} = ", blank=True)
-        elif annotation is DateTime:
-            response = inputDatetime(f"{field_name.title()} = ", blank=True)
+            response = inputStr(f"{field_name.title().replace("_", " ")}: ", blank=True)
+        elif annotation is datetime:
+            response = inputDate(
+                f"{field_name.title().replace("_", " ")} (dd/mm/yyyy): ",
+                formats=["%d/%M/%Y"],
+                blank=True,
+            )
         elif hasattr(annotation, "__annotations__"):
             nested_data = {}
-            print(f"Enter values for {field_name.title()}:")
+            print(f"Enter values for {field_name.title().replace("_", " ")}:")
             for nested_key, nested_type in get_type_hints(annotation).items():
                 nested_data[nested_key] = Cli.get_input_for_annotation(
                     nested_key, nested_type

@@ -3,7 +3,7 @@
 from uuid import uuid4
 from pytest import mark, raises
 from config import AppConfig
-from lib.interfaces.exceptions import UserError
+from lib.exceptions import UserError
 from lib.utils.encryption.cryptography import encrypt_data, decrypt_data
 
 

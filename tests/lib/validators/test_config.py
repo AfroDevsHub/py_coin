@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from pytest import mark, raises
 
-from lib.interfaces.exceptions import ApplicationError
+from lib.exceptions import ApplicationError
 from lib.validators.config import (
     validate_cvv_length,
     validate_end_date,

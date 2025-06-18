@@ -5,7 +5,8 @@ from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from lib.interfaces.exceptions import AccountError
+from lib.exceptions import AccountError
+from lib.types.user import AccountData
 from models import ENGINE
 from models.user.accounts import Account
 from serialisers.serialiser import BaseSerialiser
@@ -15,7 +16,6 @@ class AccountSerialiser(Account, BaseSerialiser):
     """Serialiser for the Account Model."""
 
     __SERIALISER_EXCEPTION__ = AccountError
-    __MUTABLE_KWARGS__: list[str] = ["status"]
 
     def get_account(self, account_id: UUID) -> dict:
         """CRUD Operation: Read Account."""
@@ -43,7 +43,7 @@ class AccountSerialiser(Account, BaseSerialiser):
 
             return str(self)
 
-    def update_account(self, private_id: UUID, **kwargs) -> str:
+    def update_account(self, private_id: UUID, data: AccountData) -> str:
         """CRUD Operation: Update Account."""
 
         with Session(ENGINE) as session:
@@ -52,11 +52,7 @@ class AccountSerialiser(Account, BaseSerialiser):
             if account is None:
                 raise AccountError("Account Not Found.")
 
-            for key, value in kwargs.items():
-                if key not in AccountSerialiser.__MUTABLE_KWARGS__:
-                    raise AccountError("Invalid Account.")
-
-                value = self.validate_serialiser_kwargs(key, value)
+            for key, value in data.model_dump().items():
                 setattr(account, key, value)
 
             try:

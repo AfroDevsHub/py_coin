@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
 from config import AppConfig
-from lib.interfaces.exceptions import BlockError
+from lib.exceptions import BlockError
 from lib.utils.constants.blocks import BlockType
 from lib.utils.constants.users import Status
 from lib.utils.encryption.cryptography import encrypt_data

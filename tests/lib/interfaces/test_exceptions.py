@@ -1,6 +1,6 @@
 """Interfaces: Testing Exceptions Module."""
 
-from lib.interfaces.exceptions import (
+from lib.exceptions import (
     AccountError,
     ApplicationError,
     BlockError,

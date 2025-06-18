@@ -5,7 +5,7 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import SettingsProfileError
+from lib.exceptions import SettingsProfileError
 from lib.utils.constants.users import (
     Communication,
     DataSharingPreference,

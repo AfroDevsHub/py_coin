@@ -5,7 +5,7 @@ from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from lib.interfaces.exceptions import TransactionError
+from lib.exceptions import TransactionError
 from lib.utils.encryption.encoders import get_hash_value
 from models import ENGINE
 from models.blockchain.transactions import Transaction

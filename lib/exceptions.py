@@ -118,3 +118,13 @@ class BlockError(Exception):
 
         super().__init__(message)
         self.message = message
+
+
+class CLIError(Exception):
+    """Custom Error For User CLI Errors."""
+
+    def __init__(self, message: str) -> None:
+        """CLIError Constructor."""
+
+        super().__init__(message)
+        self.message = message

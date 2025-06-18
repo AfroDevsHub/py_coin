@@ -5,7 +5,7 @@ from sqlalchemy import String, cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from lib.interfaces.exceptions import ContractError
+from lib.exceptions import ContractError
 from lib.utils.encryption.encoders import get_hash_value
 from models import ENGINE
 from models.blockchain.contracts import Contract

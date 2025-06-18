@@ -4,9 +4,8 @@ from datetime import datetime, timedelta
 from json import dumps, loads
 from uuid import uuid4
 from config import AppConfig
-from lib.decorators.utils import validate_function_signature
-from lib.interfaces.responses import ServiceResponse
-from lib.interfaces.data_classes import UserData
+from lib.responses import ServiceResponse
+from lib.types.user import Logindata, UserData
 from lib.utils.constants.responses import ServiceStatus
 from lib.utils.constants.users import DateFormat
 from lib.utils.encryption.cryptography import decrypt_data, encrypt_data
@@ -29,19 +28,18 @@ class AuthenticationService(AbstractService):
             cls.__instance = super().__new__(cls, *args, **kwargs)
         return cls.__instance
 
-    @validate_function_signature(True)
     def register_user(self, email: str, password: str) -> ServiceResponse:
         """Registers User."""
 
         response = UserSerialiser().create_user(email, password)
-        public_id = self.get_public_id(response)
+        user_id = self.get_public_id(response)
+        data = UserSerialiser().get_user(user_id)
         return ServiceResponse(
-            response, status=ServiceStatus.SUCCESS, data={"id": public_id}
+            message=response, status=ServiceStatus.SUCCESS, data={"user": data}
         )
 
-    @validate_function_signature(True)
     def login_user(
-        self, email: str, password: str, user_data: UserData
+        self, email: str, password: str, user_data: Logindata
     ) -> ServiceResponse:
         """Logs a User In."""
 
@@ -70,7 +68,7 @@ class AuthenticationService(AbstractService):
             **user_data.login.to_dict()
         )
         return ServiceResponse(
-            "User Authenticated.",
+            message="User Authenticated.",
             status=ServiceStatus.SUCCESS,
             data={
                 "id": user["user_id"],
@@ -85,8 +83,8 @@ class AuthenticationService(AbstractService):
             login_id, logged_in=False, logout_date=datetime.now()
         )
         return ServiceResponse(
-            "User No Longer Authenticated.",
-            ServiceStatus.SUCCESS,
+            message="User No Longer Authenticated.",
+            status=ServiceStatus.SUCCESS,
             data={"id": login_id},
         )
 

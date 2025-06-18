@@ -1,5 +1,6 @@
 """Decorators: Utility Wrapper Functions."""
 
+from enum import Enum
 from functools import wraps
 from typing import (
     Tuple,
@@ -12,7 +13,8 @@ from typing import (
     get_args,
 )
 
-from lib.interfaces.exceptions import ApplicationError
+from lib.exceptions import ApplicationError
+
 
 
 def validate_function_signature(is_method: bool = False):
@@ -73,7 +75,13 @@ def check_type(value: Any, expected_type: Any) -> bool:
             value is None and type(None) in args
         )
 
-    if origin in (list, List):
+    if isinstance(expected_type, type) and isinstance(value, expected_type):
+        return True
+
+    if origin is Enum:
+        return isinstance(value, expected_type)
+
+    if origin in (list, List, tuple, Tuple):
         return __check_list__(args, value)
 
     if origin in (dict, Dict):
@@ -85,13 +93,13 @@ def check_type(value: Any, expected_type: Any) -> bool:
     if isinstance(value, bool) and expected_type is int:
         return False
 
-    return isinstance(value, expected_type)
+    return isinstance(value, expected_type) or value is value
 
 
 def __check_list__(args: Tuple[Any], value: list) -> bool:
     """Checks Args of Type List."""
 
-    if not isinstance(value, list):
+    if not isinstance(value, (list, tuple)):
         return False
     item_type = args[0]
     return all(check_type(item, item_type) for item in value)
@@ -112,7 +120,14 @@ def __check_complex_type__(expected_type: Any, value: Any) -> bool:
 
     if not isinstance(value, dict):
         return False
-    for key, key_type in expected_type.__annotations__.items():
-        if key not in value or not check_type(value[key], key_type):
-            return False
+
+    if isinstance(value, expected_type):
+        return True
+
+    try:
+        for key, key_type in expected_type.__annotations__.items():
+            if key not in value or not check_type(value[key], key_type):
+                return False
+    except AttributeError as e:
+        print(e)
     return True

@@ -9,7 +9,7 @@ from lib.utils.constants.users import Status
 from models.user.accounts import Account
 from models.user.payments import PaymentProfile
 from serialisers.user.payments import PaymentProfileSerialiser
-from lib.interfaces.exceptions import PaymentProfileError
+from lib.exceptions import PaymentProfileError
 from models import ENGINE
 from services.authentication import AbstractService
 from tests.conftest import run_test_teardown

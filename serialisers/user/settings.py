@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from lib.interfaces.exceptions import (
+from lib.exceptions import (
     SettingsProfileError,
 )
 from models import ENGINE

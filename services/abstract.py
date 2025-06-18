@@ -1,7 +1,7 @@
 """Abstract: Base Service Class."""
 from re import compile as regex_compile
 
-from lib.interfaces.exceptions import UserError
+from lib.exceptions import UserError
 
 
 class AbstractService:

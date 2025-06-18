@@ -5,7 +5,7 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import ContractError
+from lib.exceptions import ContractError
 from lib.utils.constants.contracts import ContractStatus
 from lib.utils.encryption.cryptography import encrypt_data
 from models.blockchain.contracts import Contract

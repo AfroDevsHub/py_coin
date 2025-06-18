@@ -28,7 +28,18 @@ class DateFormat(Enum):
     """Applications Permitted Date Formats."""
 
     SHORT = "%y/%m"  # Format 2: "24/03"
-    LONG = "%d %B %Y %H:%M:%S"  # Format 1: "14 March 2024 20:05:12"
+    STANDARD = "%Y/%m/%d"  # Format 2: "2024/03/14"
+    FULL = "%d%B%Y"  # Format 1: "14 March 2024 20:05:12"
+    SLASH = "%Y/%m/%d"  # Format 2: "2024/03/14 20:05:12"
+    HYPHEN = "%Y-%m-%d"  # Format 3: "2024-03-14 20:05:12"
+
+
+class DateTimeFormat(Enum):
+    """Applications Permitted Date Formats."""
+
+    SHORT = "%y/%m %H:%M:%S"  # Format 2: "24/03"
+    STANDARD = "%Y/%m/%d %H:%M:%S"  # Format 2: "2024/03/14"
+    FULL = "%d%B%Y %H:%M:%S"  # Format 1: "14 March 2024 20:05:12"
     SLASH = "%Y/%m/%d %H:%M:%S"  # Format 2: "2024/03/14 20:05:12"
     HYPHEN = "%Y-%m-%d %H:%M:%S"  # Format 3: "2024-03-14 20:05:12"
 

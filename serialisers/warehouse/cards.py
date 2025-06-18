@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from config import AppConfig
-from lib.interfaces.exceptions import CardValidationError
+from lib.exceptions import CardValidationError
 from lib.utils.constants.users import CardType, DateFormat, Status
 from lib.utils.encryption.cryptography import decrypt_data, encrypt_data
 from lib.utils.encryption.encoders import get_hash_value

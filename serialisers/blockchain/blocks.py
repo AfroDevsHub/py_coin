@@ -6,7 +6,7 @@ from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from lib.interfaces.exceptions import BlockError
+from lib.exceptions import BlockError
 from lib.validators.blocks import validate_block_next, validate_block_previous
 from models import ENGINE
 from models.blockchain.blocks import Block

@@ -2,7 +2,7 @@
 
 from datetime import date
 from config import AppConfig
-from lib.interfaces.exceptions import (
+from lib.exceptions import (
     CardValidationError,
     PaymentProfileError,
     SettingsProfileError,

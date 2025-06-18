@@ -142,7 +142,7 @@ def create_user_profile(account_id: UUID, status: Status) -> UserProfile:
     return user_profile
 
 
-def create_user_profiles(account_ids: list[UUID]) -> list[SettingsProfile]:
+def create_user_profiles(account_ids: list[UUID]) -> list[UserProfile]:
     """Creates Test User Profiles."""
 
     user_profiles = []

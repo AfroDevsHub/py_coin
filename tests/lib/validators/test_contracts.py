@@ -1,7 +1,7 @@
 """Validators: Testing Contracts Module."""
 
 from pytest import mark, raises
-from lib.interfaces.exceptions import ContractError
+from lib.exceptions import ContractError
 from lib.utils.constants.contracts import ContractStatus
 from lib.validators.contracts import validate_contract_status
 

@@ -2,7 +2,7 @@
 
 from uuid import UUID
 from sqlalchemy.orm import Session
-from lib.interfaces.exceptions import BlockError
+from lib.exceptions import BlockError
 from lib.utils.constants.blocks import BlockType
 from models import ENGINE
 from models.blockchain.blocks import Block

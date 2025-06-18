@@ -5,14 +5,16 @@ from datetime import date
 from re import compile as regex_compile
 from uuid import uuid4
 
+from pydantic import ValidationError
 from pytest import mark, raises
+from lib.types.user import ProfileData
 from services.authentication import AbstractService
 from tests.test_utils.utils import generate_socials, check_invalid_ids
 from sqlalchemy import cast, String
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import UserError, UserProfileError
+from lib.exceptions import UserError, UserProfileError
 from lib.utils.constants.users import (
     Country,
     Gender,
@@ -144,8 +146,9 @@ def test_userprofileserialiser_update_valid(get_profiles, data):
     """Testing UserProfile Serialiser: Update UserProfile."""
 
     for profile in get_profiles:
+        print(data)
         with Session(ENGINE) as session:
-            UserProfileSerialiser().update_user_profile(profile.id, **data)
+            UserProfileSerialiser().update_user_profile(profile.id, ProfileData(**data))
         profile = session.get(UserProfile, profile.id)
 
         for key, value in data.items():
@@ -218,5 +221,5 @@ def test_userprofileserialiser_update_invalid(get_profiles, data):
     """Testing UserProfile Serialiser: Update UserProfile."""
 
     for profile in get_profiles:
-        with raises((UserProfileError, UserError)):
-            UserProfileSerialiser().update_user_profile(profile.id, **data)
+        with raises((UserProfileError, UserError, ValidationError)):
+            UserProfileSerialiser().update_user_profile(profile.id, ProfileData(**data))

@@ -1,7 +1,7 @@
 """Validators: Testing Transaction Module."""
 
 from pytest import mark, raises
-from lib.interfaces.exceptions import TransactionError
+from lib.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
 from lib.validators.transactions import (
     validate_transaction_amount,

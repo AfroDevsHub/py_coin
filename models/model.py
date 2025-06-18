@@ -4,7 +4,7 @@ from datetime import date, datetime
 
 from uuid import UUID
 
-from lib.utils.constants.users import DateFormat
+from lib.utils.constants.users import DateFormat, DateTimeFormat
 
 
 class BaseModel:
@@ -30,9 +30,9 @@ class BaseModel:
             if key.name in self.__EXCLUDE_ATTRIBUTES__:
                 continue
             value = getattr(self, key.name)
-            if isinstance(value, date):
-                data[key.name] = value.strftime(DateFormat.SHORT.value)
-            elif isinstance(value, datetime):
+            if isinstance(value, datetime):
+                data[key.name] = value.strftime(DateTimeFormat.HYPHEN.value)
+            elif isinstance(value, date):
                 data[key.name] = value.strftime(DateFormat.HYPHEN.value)
             elif isinstance(value, UUID):
                 data[key.name] = str(value)

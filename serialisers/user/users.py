@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from config import AppConfig
-from lib.interfaces.exceptions import UserError
+from lib.exceptions import UserError
+from lib.types.user import UserUpdateData
 from lib.utils.constants.users import Status
 from lib.utils.encryption.cryptography import decrypt_data, encrypt_data
 from lib.utils.encryption.encoders import get_hash_value
@@ -20,7 +21,6 @@ class UserSerialiser(User, BaseSerialiser):
     """Serialiser for the User Model."""
 
     __SERIALISER_EXCEPTION__ = UserError
-    __MUTABLE_KWARGS__: list[str] = []
 
     def get_user(self, user_id: str) -> str:
         """CRUD Operation: Read User."""
@@ -39,7 +39,9 @@ class UserSerialiser(User, BaseSerialiser):
 
         with Session(ENGINE) as session:
             self.email = str(self.__get_valid_email__(email))
-            self.password = str(self.__get_valid_password__(password, str(self.salt_value)))
+            self.password = str(
+                self.__get_valid_password__(password, str(self.salt_value))
+            )
             self.user_id = str(self.__get_valid_user_id__(str(email), password))
 
             try:
@@ -50,12 +52,7 @@ class UserSerialiser(User, BaseSerialiser):
 
             return str(self)
 
-    def update_user(
-        self,
-        private_id: UUID,
-        status: Status | None = None,
-        password: str | None = None,
-    ) -> str:
+    def update_user(self, private_id: UUID, data: UserUpdateData) -> str:
         """CRUD OperatiFon: Update User."""
 
         with Session(ENGINE) as session:
@@ -64,19 +61,18 @@ class UserSerialiser(User, BaseSerialiser):
             if user is None:
                 raise UserError("User Not Found.")
 
-            if password:
+            if data.password:
                 valid_password = self.__get_valid_password__(
-                    password, str(user.salt_value)
+                    data.password, str(user.salt_value)
                 )
                 valid_user_id = self.__get_valid_user_id__(
-                    str(decrypt_data(str(user.email))), password
+                    str(decrypt_data(str(user.email))), data.password
                 )
                 setattr(user, "password", valid_password)
                 setattr(user, "user_id", valid_user_id)
 
-            if status:
-                validate_status(status)
-                setattr(user, "status", status)
+            if data.status:
+                setattr(user, "status", data.status)
 
             try:
                 session.add(user)
