@@ -146,7 +146,6 @@ def test_userprofileserialiser_update_valid(get_profiles, data):
     """Testing UserProfile Serialiser: Update UserProfile."""
 
     for profile in get_profiles:
-        print(data)
         with Session(ENGINE) as session:
             UserProfileSerialiser().update_user_profile(profile.id, ProfileData(**data))
         profile = session.get(UserProfile, profile.id)

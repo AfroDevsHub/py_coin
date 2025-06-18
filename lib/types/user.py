@@ -1,10 +1,10 @@
 """Data-Classes: Custom Data-Type Models."""
 
-from enum import EnumType
-from typing import Dict, List
+from typing import Any, Dict, List
 from pydantic import BaseModel, field_validator
 from datetime import datetime
-from lib.exceptions import AccountError, UserProfileError
+
+from lib.exceptions import AccountError
 from lib.utils.constants.users import (
     Communication,
     Country,
@@ -43,23 +43,20 @@ class ProfileData(BaseModel):
     username: str | None = None
     date_of_birth: datetime | None = None
     gender: Gender | None = None
-    profile_picture: str | None = None
+    profile_picture: bytes | None = None
     mobile_number: str | None = None
     country: Country | None = None
     language: Language | None = None
     biography: str | None = None
     occupation: Occupation | None = None
     interests: List[Interest] | None = None
-    social_media_links: Dict[SocialMediaLink, str] | None = {}
+    social_media_links: Dict[SocialMediaLink, str] | None = None
     status: Status | None = None
 
-    @field_validator("social_media_links")
-    @classmethod
-    def social_media_links(cls, value: Dict[SocialMediaLink, str]) -> str:
-        if not isinstance(value, dict):
-            raise UserProfileError("Invalid Social Media Links.")
-        return {k.name: v for k, v in value.items()}
-
+    def model_post_init(self, context: Any) -> str:
+        if self.social_media_links:
+            self.social_media_links = {k.name: v for k, v in self.social_media_links.items()}
+        
 
 class SettingsData(BaseModel):
     """Typed Settings Dictionary."""
