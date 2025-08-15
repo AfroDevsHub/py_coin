@@ -2,46 +2,71 @@
 
 from datetime import datetime, timedelta
 from json import dumps, loads
-from uuid import uuid4
+from os import getenv
+from typing import Any, Callable
+from uuid import UUID, uuid4
+import jwt
+
+from pydantic import BaseModel
+
 from config import AppConfig
-from lib.decorators.utils import validate_function_signature
-from lib.interfaces.responses import ServiceResponse
 from lib.interfaces.data_classes import UserData
+from lib.interfaces.responses import ServiceResponse
 from lib.utils.constants.responses import ServiceStatus
-from lib.utils.constants.users import DateFormat
+from lib.utils.constants.users import Country, DateFormat, LoginMethod
 from lib.utils.encryption.cryptography import decrypt_data, encrypt_data
 from lib.utils.encryption.encoders import get_hash_value
-from serialisers.user.users import UserSerialiser
-from serialisers.warehouse.logins import LoginHistorySerialiser
-from services.abstract import AbstractService
+from lib.utils.helpers.users import generate_jwt_token, get_public_uuid
+from serialisers.user.users import CreateUserData, UserSerialiser
+from serialisers.warehouse.logins import LoginHistorySerialiser, UpdateLoginHistory
+
+def handle_service_errors(func: Callable[..., Any]) -> Callable[..., ServiceResponse]:
+    """Handles Service Errors."""
+
+    def wrapper(*args: Any, **kwargs: Any) -> ServiceResponse:
+        try:
+            return func(*args, **kwargs)
+        except Exception as exc:
+            return ServiceResponse(
+                message=str(exc),
+                status=ServiceStatus.ERROR,
+            )
+
+    return wrapper
+
+class LoginData(BaseModel):
+    login_location: Country | None = None
+    login_device: str | None = None
+    login_method: LoginMethod | None = None
 
 
-class AuthenticationService(AbstractService):
+class AuthenticationService:
     """Manages Authentication Operations."""
 
     __instance = None
     ACTIVE = True
 
-    def __new__(cls, *args, **kwargs) -> "AuthenticationService":
+    def __new__(cls, *args: Any, **kwargs: Any) -> "AuthenticationService":
         """Singleton Class Constructor."""
 
         if not cls.__instance:
             cls.__instance = super().__new__(cls, *args, **kwargs)
         return cls.__instance
 
-    @validate_function_signature(True)
+    @handle_service_errors
     def register_user(self, email: str, password: str) -> ServiceResponse:
         """Registers User."""
 
-        response = UserSerialiser().create_user(email, password)
-        public_id = self.get_public_id(response)
+        user_data = CreateUserData(email=email, password=password)
+        response = UserSerialiser().create_user(user_data)
+        public_id = get_public_uuid(response)
         return ServiceResponse(
-            response, status=ServiceStatus.SUCCESS, data={"id": public_id}
+            message=response, status=ServiceStatus.SUCCESS, data={"id": public_id}
         )
 
-    @validate_function_signature(True)
+    @handle_service_errors
     def login_user(
-        self, email: str, password: str, user_data: UserData
+        self, email: str, password: str, meta_data: LoginData
     ) -> ServiceResponse:
         """Logs a User In."""
 
@@ -54,52 +79,49 @@ class AuthenticationService(AbstractService):
                 self.logout_user(loads(decrypt_data(login))["id"])
 
         response = LoginHistorySerialiser().create_login_history(user["id"])
-        login_id = self.get_public_id(response)
-        login_history = LoginHistorySerialiser().get_login_history(login_id)
+        login_id = get_public_uuid(response)
+        login_history = LoginHistorySerialiser().get_login_history(UUID(login_id))
 
         session_id = uuid4()
-        token = AuthenticationService().__generate_authentication_token__(
+        token = generate_jwt_token(
             user_id=user["user_id"],
             login_id=login_history["login_id"],
             session_id=str(session_id),
+            email=decrypt_data(user["email"]),
+        )
+        login_data = UpdateLoginHistory(
+            session_id=session_id,
+            login_location=meta_data.login_location,
+            login_device=meta_data.login_device,
+            login_method=meta_data.login_method,
+            logged_in=True,
+            authentication_token=encrypt_data(token.encode("utf-8")),
         )
         LoginHistorySerialiser().update_login_history(
             login_history["id"],
-            session_id=session_id,
-            authentication_token=token,
-            **user_data.login.to_dict()
+            login_data
         )
         return ServiceResponse(
-            "User Authenticated.",
+            message="User Authenticated.",
             status=ServiceStatus.SUCCESS,
             data={
-                "id": user["user_id"],
+                "id": user["id"],
                 "token": token,
             },
         )
 
-    def logout_user(self, login_id: str):
+    def logout_user(self, login_id: UUID):
         """Logs User Out."""
 
+        login_data = UpdateLoginHistory(
+            logged_in=False,
+            logout_date=datetime.now()
+        )
         LoginHistorySerialiser().update_login_history(
-            login_id, logged_in=False, logout_date=datetime.now()
+            login_id, login_data
         )
         return ServiceResponse(
-            "User No Longer Authenticated.",
-            ServiceStatus.SUCCESS,
+            message="User No Longer Authenticated.",
+            status=ServiceStatus.SUCCESS,
             data={"id": login_id},
         )
-
-    @staticmethod
-    def __generate_authentication_token__(**kwargs) -> str:
-        """Generates a valid JSON Web Token."""
-
-        result = {
-            "expires": (datetime.now() + timedelta(days=30)).strftime(
-                DateFormat.HYPHEN.value
-            ),
-        }
-        for key, kwarg in kwargs.items():
-            result[key] = kwarg
-
-        return encrypt_data(dumps(result).encode())

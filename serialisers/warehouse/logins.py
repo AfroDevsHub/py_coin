@@ -1,36 +1,42 @@
 """Logins: Serialiser for Login History Model."""
 
+from datetime import datetime
+from typing import Any
 from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from pydantic import BaseModel, validate_call
 from lib.interfaces.exceptions import (
     LoginHistoryError,
 )
+from lib.utils.constants.users import Country, LoginMethod
 from models import ENGINE
 from models.warehouse.logins import LoginHistory
 from serialisers.serialiser import BaseSerialiser
 
 
+class UpdateLoginHistory(BaseModel):
+    session_id: UUID | None = None
+    login_location: Country | None = None
+    login_device: str | None = None
+    login_method: LoginMethod | None = None
+    logged_in: bool | None = None
+    logout_date: datetime | None = None
+    authentication_token: str | None = None
+
+
 class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
     """Serialiser for the Login History Model."""
 
-    __SERIALISER_EXCEPTION__ = LoginHistoryError
-    __MUTABLE_KWARGS__: list[str] = [
-        "session_id",
-        "login_location",
-        "login_device",
-        "login_method",
-        "logged_in",
-        "logout_date",
-        "authentication_token",
-    ]
-
-    def get_login_history(self, login_id: UUID) -> dict:
+    @validate_call
+    def get_login_history(self, login_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get Login History."""
 
         with Session(ENGINE) as session:
-            query = select(LoginHistory).filter(cast(LoginHistory.login_id, uuid) == login_id)
+            query = select(LoginHistory).filter(
+                cast(LoginHistory.login_id, uuid) == login_id
+            )
             login_history = session.execute(query).scalar_one_or_none()
 
             if not login_history:
@@ -38,6 +44,7 @@ class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
 
             return self.__get_model_data__(login_history)
 
+    @validate_call
     def create_login_history(self, user_id: UUID) -> str:
         """CRUD Operation: Add Login History."""
 
@@ -52,7 +59,8 @@ class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
 
             return str(self)
 
-    def update_login_history(self, private_id: UUID, **kwargs) -> str:
+    @validate_call
+    def update_login_history(self, private_id: UUID, data: UpdateLoginHistory) -> str:
         """CRUD Operation: Update Login History."""
 
         with Session(ENGINE) as session:
@@ -61,12 +69,10 @@ class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
             if login_history is None:
                 raise LoginHistoryError("Login History Not Found.")
 
-            for key, value in kwargs.items():
-                if key not in LoginHistorySerialiser.__MUTABLE_KWARGS__:
-                    raise LoginHistoryError("Invalid Login History.")
+            for key, value in data.model_dump().items():
+                if value is not None:
+                    setattr(login_history, key, value)
 
-                value = self.validate_serialiser_kwargs(key, value)
-                setattr(login_history, key, value)
             try:
                 session.add(login_history)
                 session.commit()
@@ -75,6 +81,7 @@ class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
 
             return str(login_history)
 
+    @validate_call
     def delete_login_history(self, private_id: UUID) -> str:
         """CRUD Operation: Delete Login History."""
 

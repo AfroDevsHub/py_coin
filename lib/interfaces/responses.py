@@ -1,24 +1,14 @@
 """Responses: Contains Custom Data Classes for Responses."""
 
-from typing import Optional
-from lib.decorators.utils import validate_function_signature
-from lib.interfaces.abstract import AbstractType
+from typing import Any, Optional
+
+from pydantic import BaseModel
 from lib.utils.constants.responses import ServiceStatus
 
 
-class ServiceResponse(AbstractType):
+class ServiceResponse(BaseModel):
     """Manages Custom Service Responses."""
 
-    @validate_function_signature(True)
-    def __init__(self, message: str, status: ServiceStatus, data: Optional[dict] = None) -> None:
-        """ServiceResponse Constructor."""
-
-        self.message = message
-        self.status = status
-        self.data = data
-        super().__init__(None)
-
-    def __str__(self) -> str:
-        """String representation of the Service Response."""
-
-        return f"Response: {self.__class__.__name__}"
+    message: str
+    status: ServiceStatus
+    data: dict[str, Any] | None = None

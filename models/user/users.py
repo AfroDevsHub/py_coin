@@ -22,7 +22,7 @@ class User(Base, BaseModel):
     id: uuid | Column[uuid] = Column(
         "id", UUID(as_uuid=True), primary_key=True, nullable=False
     )
-    user_id: str | Column[str] = Column(
+    user_id = Column(
         "user_id", String(256), nullable=False, unique=True
     )
     email: str | Column[str] = Column("email", String(256), unique=True, nullable=False)

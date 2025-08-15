@@ -1,35 +1,45 @@
 """Settings: Serialiser for Settings Profile Model."""
 
+from datetime import datetime
+from typing import Any
 from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from pydantic import BaseModel, validate_call
 from lib.interfaces.exceptions import (
     SettingsProfileError,
+)
+from lib.utils.constants.users import (
+    Communication,
+    DataSharingPreference,
+    ProfileVisibility,
+    Theme,
+    Verification,
 )
 from models import ENGINE
 from models.user.settings import SettingsProfile
 from serialisers.serialiser import BaseSerialiser
 
 
+class UpdateSettingsProfile(BaseModel):
+    mfa_enabled: bool | None = None
+    location_tracking_enabled: bool | None = None
+    cookies_enabled: bool | None = None
+    email_status: bool | None = None
+    data_sharing_preferences: list[DataSharingPreference] | None = None
+    communication_preference: Communication | None = None
+    theme_preference: Theme | None = None
+    profile_visibility_preference: ProfileVisibility | None = None
+    mfa_last_used_date: datetime | None = None
+    communication_status: Verification | None = None
+
+
 class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
     """Serialiser for the Settings Model."""
 
-    __SERIALISER_EXCEPTION__ = SettingsProfileError
-    __MUTABLE_KWARGS__: list[str] = [
-        "mfa_enabled",
-        "location_tracking_enabled",
-        "cookies_enabled",
-        "email_status",
-        "data_sharing_preferences",
-        "communication_preference",
-        "theme_preference",
-        "profile_visibility_preference",
-        "mfa_last_used_date",
-        "communication_status",
-    ]
-
-    def get_settings_profile(self, settings_id: UUID) -> dict:
+    @validate_call
+    def get_settings_profile(self, settings_id: str) -> dict[str, Any]:
         """CRUD Operation: Get Settings."""
 
         with Session(ENGINE) as session:
@@ -43,11 +53,12 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
 
             return self.__get_model_data__(settings_profile)
 
-    def create_settings_profile(self, account_id: UUID) -> str:
+    @validate_call
+    def create_settings_profile(self, account_id: str) -> str:
         """CRUD Operation: Add Settings."""
 
         with Session(ENGINE) as session:
-            self.account_id = account_id
+            self.account_id = UUID(account_id)
 
             try:
                 session.add(self)
@@ -57,7 +68,10 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
 
             return str(self)
 
-    def update_settings_profile(self, private_id: UUID, **kwargs) -> str:
+    @validate_call
+    def update_settings_profile(
+        self, private_id: str, data: UpdateSettingsProfile
+    ) -> str:
         """CRUD Operation: Update Settings."""
 
         with Session(ENGINE) as session:
@@ -66,12 +80,9 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
             if settings_profile is None:
                 raise SettingsProfileError("Settings Not Found.")
 
-            for key, value in kwargs.items():
-                if key not in SettingsProfileSerialiser.__MUTABLE_KWARGS__:
-                    raise SettingsProfileError("Invalid Setting to Update.")
-
-                value = self.validate_serialiser_kwargs(key, value)
-                setattr(settings_profile, key, value)
+            for key, value in data.model_dump().items():
+                if value is not None:
+                    setattr(settings_profile, key, value)
 
             try:
                 session.add(settings_profile)
@@ -81,6 +92,7 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
 
             return str(settings_profile)
 
+    @validate_call
     def delete_settings_profile(self, private_id: UUID) -> str:
         """CRUD Operation: Delete Settings."""
 

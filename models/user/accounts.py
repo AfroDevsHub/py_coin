@@ -18,7 +18,7 @@ class Account(Base, BaseModel):
     __table_args__ = ({"schema": "users"},)
     __EXCLUDE_ATTRIBUTES__: list[str] = []
 
-    id: uuid | Column[uuid] = Column(
+    id = Column(
         "id",
         UUID(as_uuid=True),
         default=text(f"'{str(uuid4())}'"),
@@ -26,13 +26,13 @@ class Account(Base, BaseModel):
         nullable=False,
         primary_key=True,
     )
-    account_id: uuid | Column[uuid] = Column(
+    account_id = Column(
         "account_id",
         UUID(as_uuid=True),
         default=text(f"'{str(uuid4())}'"),
         unique=True,
     )
-    user_id: uuid | Column[uuid] = Column(
+    user_id = Column(
         "user_id", UUID(as_uuid=True), ForeignKey("users.users.id"), nullable=False
     )
     status: Status | Column[Status] = Column(

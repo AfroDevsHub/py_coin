@@ -79,6 +79,7 @@ class LoginData(AbstractType):
         return f"Application Model: {self.__class__.__name__}"
 
 
+
 class UserData(AbstractType):
     """Type Check for User Data."""
 

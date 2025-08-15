@@ -9,3 +9,4 @@ class ServiceStatus(Enum):
     SUCCESS = "Success"
     ERROR = "Error"
     WARNING = "Warning"
+    INFO = "Info"

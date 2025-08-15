@@ -2,6 +2,7 @@
 
 from datetime import date, datetime
 
+from typing import Any
 from uuid import UUID
 
 from lib.utils.constants.users import DateFormat
@@ -9,9 +10,6 @@ from lib.utils.constants.users import DateFormat
 
 class BaseModel:
     """A Base/Abstract Model."""
-
-    __table__ = None
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
     def __str__(self) -> str:
         """String Representation of the Base Class."""
@@ -23,9 +21,10 @@ class BaseModel:
 
         return f"Application Model: {self.__class__.__name__}"
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         """Converts a Model to a Python Dictionary."""
-        data = {}
+
+        data: dict[str, Any] = {}
         for key in self.__table__.columns:
             if key.name in self.__EXCLUDE_ATTRIBUTES__:
                 continue

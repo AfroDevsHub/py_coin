@@ -49,7 +49,7 @@ class Block(Base, BaseModel):
     next_block_id: uuid | Column[uuid] = Column(
         "next_block_id", UUID(as_uuid=True), nullable=True
     )
-    block_type: Status | Column[Status] = Column(
+    block_type: BlockType | Column[BlockType] = Column(
         "block_type",
         Enum(BlockType, name="block_type"),
         nullable=False,

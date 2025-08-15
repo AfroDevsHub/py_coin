@@ -2,6 +2,7 @@
 
 from enum import Enum
 from re import Pattern, compile as regex_compile
+from typing import Type
 
 
 class Status(Enum):
@@ -36,10 +37,10 @@ class DateFormat(Enum):
 class Regex(Enum):
     """Holds Regex Constants That are Applicable to the Application."""
 
-    EMAIL: Pattern = regex_compile(
+    EMAIL = regex_compile(
         r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-_]+\.[a-zA-Z]{1,3}\.?[a-zA-Z]{2,3}$"
     )
-    PASSWORD: Pattern = regex_compile(
+    PASSWORD = regex_compile(
         r"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()-_+=]).{8,}$"
     )
     NAME = regex_compile(r"^[a-zA-Z]{1,30}$")
@@ -62,6 +63,7 @@ class Gender(Enum):
 class Country(Enum):
     """Enumeration of Email Verification Statuses."""
 
+    OTHER = "Other", "XX"
     AFGHANISTAN = "Afghanistan", "AF"
     ALBANIA = "Albania", "AL"
     ALGERIA = "Algeria", "DZ"

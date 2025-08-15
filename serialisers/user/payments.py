@@ -1,27 +1,41 @@
 """Payments: Serialiser for Payment Profile Model."""
 
+from typing import Any
 from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from pydantic import BaseModel, field_validator, validate_call
 from lib.interfaces.exceptions import PaymentProfileError
+from lib.utils.constants.users import Status
 from models import ENGINE
 from models.user.payments import PaymentProfile
 from serialisers.serialiser import BaseSerialiser
 
 
+class UpdatePaymentProfile(BaseModel):
+    """Data Model for Payment Profile Update."""
+
+    name: str | None = None
+    description: str | None = None
+    status: Status | None = None
+    balance: float | None = None
+
+    @field_validator("status")
+    def validate_status(cls, value: Status) -> Status:
+        """Validate Payment Profile Status."""
+
+        if value not in [Status.ACTIVE, Status.INACTIVE, Status.DELETED]:
+            raise PaymentProfileError("Invalid Status.")
+
+        return value
+
+
 class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
     """Serialiser for the Payment Profile Model."""
 
-    __SERIALISER_EXCEPTION__ = PaymentProfileError
-    __MUTABLE_KWARGS__: list[str] = [
-        "name",
-        "description",
-        "status",
-        "balance",
-    ]
-
-    def get_payment_profile(self, payment_id: UUID) -> dict:
+    @validate_call
+    def get_payment_profile(self, payment_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get Payment Profile."""
 
         with Session(ENGINE) as session:
@@ -35,6 +49,7 @@ class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
 
             return self.__get_model_data__(payment_profile)
 
+    @validate_call
     def create_payment_profile(self, account_id: UUID, card_id: UUID) -> str:
         """CRUD Operation: Add Payment Profile."""
 
@@ -50,7 +65,8 @@ class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
 
             return str(self)
 
-    def update_payment_profile(self, private_id: UUID, **kwargs) -> str:
+    @validate_call
+    def update_payment_profile(self, private_id: str, data: UpdatePaymentProfile) -> str:
         """CRUD Operation: Update Payment Profile."""
 
         with Session(ENGINE) as session:
@@ -59,12 +75,9 @@ class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
             if payment_profile is None:
                 raise PaymentProfileError("Payment Profile Not Found.")
 
-            for key, value in kwargs.items():
-                if key not in PaymentProfileSerialiser.__MUTABLE_KWARGS__:
-                    raise PaymentProfileError("Invalid User Profile.")
-
-                value = self.validate_serialiser_kwargs(key, value)
-                setattr(payment_profile, key, value)
+            for key, value in data.model_dump().items():
+                if value is not None:
+                    setattr(payment_profile, key, value)
 
             try:
                 session.add(payment_profile)
@@ -74,6 +87,7 @@ class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
 
             return str(payment_profile)
 
+    @validate_call
     def delete_payment_profile(self, private_id: UUID) -> str:
         """CRUD Operation: Delete Payment Profile."""
 
