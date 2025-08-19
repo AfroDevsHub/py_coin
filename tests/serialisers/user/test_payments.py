@@ -1,6 +1,5 @@
 """User: Testing Payments Profile Serialiser."""
 
-from uuid import uuid4
 from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError

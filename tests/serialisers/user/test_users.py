@@ -10,7 +10,6 @@ from sqlalchemy.exc import ProgrammingError, DataError
 from config import AppConfig
 from lib.interfaces.exceptions import UserError
 from lib.utils.constants.users import Status
-from lib.utils.encryption.cryptography import encrypt_data
 from lib.utils.encryption.encoders import get_hash_value
 from serialisers.user.users import UserSerialiser
 from models import ENGINE

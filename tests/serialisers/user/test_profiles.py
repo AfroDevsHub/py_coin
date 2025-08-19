@@ -2,8 +2,6 @@
 
 from base64 import b64encode
 from datetime import date
-from re import compile as regex_compile
-from uuid import uuid4
 
 from pytest import mark, raises
 from services.authentication import AbstractService

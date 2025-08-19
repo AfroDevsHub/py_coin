@@ -11,7 +11,6 @@ from uuid import uuid4
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 from lib.utils.constants.users import Status, CardType
 

@@ -1,6 +1,6 @@
 """Blocks: Serialiser for Block Model."""
 
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 from pydantic import BaseModel, validate_call
 from sqlalchemy import cast, select, UUID as uuid
@@ -11,7 +11,7 @@ from lib.interfaces.exceptions import BlockError
 from lib.utils.constants.blocks import BlockType
 from models import ENGINE
 from models.blockchain.blocks import Block
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
 class BlockData(BaseModel):
@@ -22,11 +22,8 @@ class BlockData(BaseModel):
     next_block_id: UUID | None = None
 
 
-class BlockSerialiser(Block, BaseSerialiser):
+class BlockSerialiser(ISerialiser):
     """Serialiser for the Block Model."""
-
-    __SERIALISER_EXCEPTION__ = BlockError
-    __MUTABLE_KWARGS__: list[str] = ["block_type", "previous_block_id", "next_block_id"]
 
     @validate_call  # type: ignore
     def get_block(self, block_id: UUID) -> dict[str, Any]:

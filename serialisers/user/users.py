@@ -1,149 +1,94 @@
 """Users: Serialiser for User Model."""
 
-from uuid import UUID
-from sqlalchemy import String, cast, select
+from typing import cast
+from uuid import UUID, uuid4
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from pydantic import BaseModel, field_validator, validate_call
+from sqlalchemy.orm import joinedload
 
-from config import AppConfig
+from pydantic import validate_call
+
 from lib.interfaces.exceptions import UserError
-from lib.utils.constants.users import Regex, Status
-from lib.utils.encryption.cryptography import decrypt_data, encrypt_data
+from lib.interfaces.user.users import CreateUserData, UpdateUserData
 from lib.utils.encryption.encoders import get_hash_value
 from models import ENGINE
 from models.user.users import User
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
-class CreateUserData(BaseModel):
-    """Data Model for User Creation."""
-
-    email: str
-    password: str
-
-    @field_validator("email")
-    def validate_email(cls, value: str) -> str:
-        """Validate User Email."""
-
-        if not Regex.EMAIL.value.match(value):
-            raise UserError("Invalid Email.")
-
-        return value
-
-    @field_validator("password")
-    def validate_password(cls, value: str) -> str:
-        """Validate User Password."""
-
-        if not Regex.PASSWORD.value.match(value):
-            raise UserError("Invalid Password.")
-
-        return value
-
-
-class UpdateUserData(BaseModel):
-    """Data Model for User Update."""
-
-    status: Status | None = None
-    password: str | None = None
-
-    @field_validator("status")
-    def validate_status(cls, value: Status) -> Status:
-        """Validate User Status."""
-
-        if value not in [Status.NEW, Status.ACTIVE, Status.DELETED]:
-            raise UserError("Invalid Status.")
-
-        return value
-
-    @field_validator("password")
-    def validate_password(cls, value: str) -> str:
-        """Validate User Password."""
-
-        if not Regex.PASSWORD.value.match(value):
-            raise UserError("Invalid Password.")
-
-        return value
-
-
-class UserSerialiser(User, BaseSerialiser):
+class UserSerialiser(ISerialiser):
     """Serialiser for the User Model."""
 
     @validate_call
-    def get_user(self, user_id: str) -> str:
-        """CRUD Operation: Read User."""
-
-        with Session(ENGINE) as session:
-            query = select(User).filter(User.user_id == user_id)
-            user = session.execute(query).scalar_one_or_none()
-
-            if not user:
-                raise UserError("User Not Found.")
-
-            return self.__get_encrypted_model_data__(user)
-
-    @validate_call
-    def create_user(self, data: CreateUserData) -> str:
+    def create(self, data: CreateUserData) -> User:
         """CRUD Operation: Create User."""
 
         with Session(ENGINE) as session:
-            self.email = str(self.__get_valid_email__(data.email))
-            self.password = str(
-                self.__get_valid_password__(data.password, str(self.salt_value))
-            )
-            self.user_id = str(
-                self.__get_valid_user_id__(str(data.email), data.password)
-            )
-
-            try:
-                session.add(self)
-                session.commit()
-            except IntegrityError as exc:
-                raise UserError("User Not created. Already exists.") from exc
-
-            return str(self)
-
-    @validate_call
-    def update_user(
-        self,
-        private_id: str,
-        data: UpdateUserData,
-    ) -> str:
-        """CRUD Operation: Update User."""
-
-        with Session(ENGINE) as session:
-            user = session.get(User, private_id)
-
-            if user is None:
-                raise UserError("User Not Found.")
-
-            if data.password:
-                valid_password = self.__get_valid_password__(
-                    data.password, str(user.salt_value)
-                )
-                valid_user_id = self.__get_valid_user_id__(
-                    str(decrypt_data(str(user.email))), data.password
-                )
-                setattr(user, "password", valid_password)
-                setattr(user, "user_id", valid_user_id)
-
-            if data.status:
-                setattr(user, "status", data.status)
+            salt_value = uuid4()
+            password = get_hash_value(data.password, str(salt_value))
+            user = User(email=data.email, password=password, salt_value=salt_value)
 
             try:
                 session.add(user)
                 session.commit()
+                session.refresh(user)
+            except IntegrityError as exc:
+                raise UserError("User Not created. Already exists.") from exc
+
+            return user
+
+    @validate_call
+    def read(self, model_id: UUID) -> User:
+        """CRUD Operation: Read User."""
+
+        with Session(ENGINE) as session:
+            user = (
+                session.query(User)
+                .options(joinedload(User.login_history))
+                .get(model_id)
+            )
+
+            if not user:
+                raise UserError("User Not Found.")
+
+            return user
+
+    @validate_call
+    def update(self, model_id: UUID, data: UpdateUserData) -> User:
+        """CRUD Operation: Update User."""
+
+        with Session(ENGINE) as session:
+            user = session.get(User, model_id)
+
+            if user is None:
+                raise UserError("User Not Found.")
+
+            for key, value in data.model_dump().items():
+                if value is None:
+                    continue
+
+                if key == "password":
+                    valid_password = str(get_hash_value(value, str(user.salt_value)))
+                    setattr(user, key, valid_password)
+                else:
+                    setattr(user, key, value)
+
+            try:
+                session.add(user)
+                session.commit()
+                session.refresh(user)
             except IntegrityError as exc:
                 raise UserError("User not Updated.") from exc
 
-            return str(user)
+            return user
 
     @validate_call
-    def delete_user(self, private_id: UUID) -> str:
+    def delete(self, model_id: UUID) -> str:
         """CRUD Operation: Delete User."""
 
         with Session(ENGINE) as session:
-            user = session.get(User, private_id)
+            user = session.get(User, model_id)
 
             if not user:
                 raise UserError("User Not Found")
@@ -154,19 +99,23 @@ class UserSerialiser(User, BaseSerialiser):
             except IntegrityError as exc:
                 raise UserError("User not Deleted.") from exc
 
-            return f"Deleted: {private_id}"
+            return f"Deleted: {model_id}"
 
-    def __get_valid_email__(self, email: str) -> str:
-        """Get Valid Email."""
+    @validate_call
+    def get_user_id(self, data: CreateUserData) -> UUID:
+        """Get User by Email."""
 
-        return encrypt_data(email.encode())
+        with Session(ENGINE) as session:
+            query = select(User).where(
+                User.email == data.email,
+            )
+            user = session.execute(query).scalar_one_or_none()
 
-    def __get_valid_password__(self, password: str, salt_value: str) -> str:
-        """Get Valid Password."""
+            if not user:
+                raise UserError("User Not Found.")
 
-        return str(get_hash_value(password, str(salt_value)))
+            password = get_hash_value(data.password, str(user.salt_value))
+            if str(user.password) != password:
+                raise UserError("Invalid User Credentials.")
 
-    def __get_valid_user_id__(self, email: str, password: str) -> str:
-        """Get Valid User ID."""
-
-        return get_hash_value(str(email) + password, str(AppConfig().salt_value))
+            return cast(UUID, user.id)

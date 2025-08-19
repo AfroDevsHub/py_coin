@@ -10,7 +10,6 @@ from lib.utils.constants.users import (
     Communication,
     DataSharingPreference,
     ProfileVisibility,
-    Status,
     Theme,
     Verification,
 )

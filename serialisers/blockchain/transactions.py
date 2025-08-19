@@ -10,12 +10,15 @@ from sqlalchemy.exc import IntegrityError
 from lib.interfaces.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
 from lib.utils.encryption.encoders import get_hash_value
-from lib.validators.transactions import validate_transaction_amount, validate_transaction_status
+from lib.validators.transactions import (
+    validate_transaction_amount,
+    validate_transaction_status,
+)
 from models import ENGINE
 from models.blockchain.transactions import Transaction
 from models.user.payments import PaymentProfile
 from models.warehouse.cards import Card
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
 class UpdateTransactionData(BaseModel):
@@ -27,10 +30,8 @@ class UpdateTransactionData(BaseModel):
     transaction_status: TransactionStatus | None = None
 
 
-class TransactionSerialiser(Transaction, BaseSerialiser):
+class TransactionSerialiser(ISerialiser):
     """Serialiser for the Transaction Model."""
-
-    __SERIALISER_EXCEPTION__ = TransactionError
 
     @validate_call
     def get_transaction(self, transaction_id: str) -> dict[str, Any]:
@@ -115,7 +116,9 @@ class TransactionSerialiser(Transaction, BaseSerialiser):
                     transaction.amount = validate_transaction_amount(value, transaction)
 
                 if key == "transaction_status":
-                    transaction.transaction_status = validate_transaction_status(value, transaction)
+                    transaction.transaction_status = validate_transaction_status(
+                        value, transaction
+                    )
 
             try:
                 session.add(transaction)

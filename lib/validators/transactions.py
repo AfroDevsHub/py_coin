@@ -1,6 +1,5 @@
 """Transactions: validations for Transaction Related Models."""
 
-from pydantic import validate_call
 from lib.interfaces.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
 from models.blockchain.transactions import Transaction

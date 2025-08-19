@@ -1,8 +1,7 @@
 """Users: Contains Constants, Enumerations and Other Static data."""
 
 from enum import Enum
-from re import Pattern, compile as regex_compile
-from typing import Type
+from re import compile as regex_compile
 
 
 class Status(Enum):

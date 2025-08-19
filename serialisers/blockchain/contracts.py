@@ -2,7 +2,7 @@
 
 from typing import Any
 from uuid import UUID
-from pydantic import BaseModel, field_validator, validate_call
+from pydantic import BaseModel, validate_call
 from sqlalchemy import String, cast, select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -15,7 +15,7 @@ from models import ENGINE
 from models.blockchain.contracts import Contract
 from models.user.payments import PaymentProfile
 from models.warehouse.cards import Card
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
 class UpdateContractData(BaseModel):
@@ -24,10 +24,8 @@ class UpdateContractData(BaseModel):
     contract_status: Status | None = None
 
 
-class ContractSerialiser(Contract, BaseSerialiser):
+class ContractSerialiser(ISerialiser):
     """Serialiser for the Contract Model."""
-
-    __SERIALISER_EXCEPTION__ = ContractError
 
     @validate_call
     def get_contract(self, contract_id: str) -> dict[str, Any]:

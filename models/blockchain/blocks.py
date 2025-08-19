@@ -13,17 +13,14 @@ from sqlalchemy import (
 )
 
 from lib.utils.constants.blocks import BlockType
-from lib.utils.constants.users import Status
 from models import Base
-from models.model import BaseModel
 
 
-class Block(Base, BaseModel):
+class Block(Base):
     """Model representing a Block."""
 
     __tablename__ = "blocks"
     __table_args__ = ({"schema": "blockchain"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
     id: uuid | Column[uuid] = Column(
         "id", UUID(as_uuid=True), primary_key=True, nullable=False
@@ -75,9 +72,9 @@ class Block(Base, BaseModel):
     def __str__(self) -> str:
         """String Representation of the Contract Object."""
 
-        return f"Block ID: {str(self.block_id)}"
+        return f"Block ID: {self.block_id}, Transaction ID: {self.transaction_id}, Contract ID: {self.contract_id}, Previous Block ID: {self.previous_block_id}, Next Block ID: {self.next_block_id}, Block Type: {self.block_type}, Created Date: {self.created_date}, Updated Date: {self.updated_date}"
 
     def __repr__(self) -> str:
         """String Representation of the Contract Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"Block({self.block_id}, {self.transaction_id}, {self.contract_id}, {self.previous_block_id}, {self.next_block_id}, {self.block_type}, {self.created_date}, {self.updated_date})"

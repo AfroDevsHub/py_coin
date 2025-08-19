@@ -1,9 +1,6 @@
 """Warehouse: Testing Card Serialiser."""
 
-from datetime import date
 import json
-from re import compile as regex_regex_compile
-import sys
 
 from pytest import mark, raises
 from sqlalchemy.orm import Session

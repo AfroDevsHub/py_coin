@@ -1,6 +1,5 @@
 """Contracts: validations for Contract Related Models."""
 
-from pydantic import ConfigDict, validate_call
 from lib.interfaces.exceptions import ContractError
 from lib.utils.constants.contracts import ContractStatus
 from models.blockchain.contracts import Contract

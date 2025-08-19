@@ -56,3 +56,4 @@ uuid==1.30
 virtualenv==20.26.2
 wcwidth==0.2.13
 pyjwt==2.10.1
+ruff==0.12.9

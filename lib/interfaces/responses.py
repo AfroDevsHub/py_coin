@@ -1,6 +1,6 @@
 """Responses: Contains Custom Data Classes for Responses."""
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel
 from lib.utils.constants.responses import ServiceStatus

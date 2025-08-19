@@ -3,7 +3,6 @@
 import jwt
 from re import compile as regex_compile
 from os import getenv
-from uuid import UUID
 
 from lib.interfaces.exceptions import UserError
 

@@ -4,7 +4,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from enum import Enum
 from json import dumps, loads
 import textwrap
-from typing import Any, List, Type, Union, get_type_hints
+from typing import Any, Type, Union, get_type_hints
 from pyinputplus import (
     inputMenu,
     inputStr,
