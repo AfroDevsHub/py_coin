@@ -68,7 +68,7 @@ class AuthenticationService:
 
         session_id = uuid4()
         token = generate_jwt_token(
-            user_id=str(user.user_id),
+            user_id=str(user.id),
             login_id=str(login.id),
             session_id=str(session_id),
             email=str(user.email),

@@ -2,6 +2,7 @@
 
 from enum import Enum
 from typing import cast
+from fastapi import FastAPI
 from inquirer import prompt, List
 from pydantic import BaseModel
 
@@ -15,7 +16,7 @@ from views.cli.manage_account import display_manage_account_sections
 from views.cli.payment_profiles import display_add_payment_profile
 from views.cli.user_account import display_account_sections
 from views.cli.authentication import handle_intro
-
+from views.api import router
 
 def handle_user_services_input(answer: dict[str, str], user_id: str) -> ServiceResponse:
     match answer["user_services"]:
@@ -188,7 +189,6 @@ def main() -> bool:
             if answer["user_services"] == "Manage Account":
                 display_manage_account_sections(account.data["account"])
 
-
             continue
         elif answer["services"] == "Block Chain":
             print(f"[{user_id} 🔗] Block Chain Service Selected.")
@@ -204,6 +204,10 @@ def main() -> bool:
         elif answer["services"] == "Exit":
             print("[✅] Thank you for using PY Coin. Goodbye!")
             return False
+
+
+app = FastAPI()
+app.include_router(router)
 
 if __name__ == "__main__":
     main()
