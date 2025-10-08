@@ -1,38 +1,36 @@
 """Accounts: Accounts Model."""
 
-from uuid import uuid4, UUID as uuid
+from uuid import uuid4
 from sqlalchemy import UUID, Column, DateTime, text, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from lib.utils.constants.users import Status
 from models import Base
-from models.model import BaseModel
 from models.user.payments import PaymentProfile
 from models.user.profiles import UserProfile
 from models.user.settings import SettingsProfile
 
 
-class Account(Base, BaseModel):
+class Account(Base):
     """Model representing a User's Account."""
 
     __tablename__ = "accounts"
     __table_args__ = ({"schema": "users"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
-    id: uuid | Column[uuid] = Column(
+    id = Column(
         "id",
         UUID(as_uuid=True),
-        default=text(f"'{str(uuid4())}'"),
+        default=uuid4,
         unique=True,
         nullable=False,
         primary_key=True,
     )
-    account_id: uuid | Column[uuid] = Column(
+    account_id = Column(
         "account_id",
         UUID(as_uuid=True),
-        default=text(f"'{str(uuid4())}'"),
+        default=uuid4,
         unique=True,
     )
-    user_id: uuid | Column[uuid] = Column(
+    user_id = Column(
         "user_id", UUID(as_uuid=True), ForeignKey("users.users.id"), nullable=False
     )
     status: Status | Column[Status] = Column(
@@ -52,27 +50,21 @@ class Account(Base, BaseModel):
         nullable=False,
     )
     user_profiles = relationship(
-        UserProfile, backref="Account", cascade="all, delete-orphan"
+        UserProfile, backref="Account", cascade="all, delete-orphan", uselist=False
     )
     payment_profiles = relationship(
-        PaymentProfile, backref="Account", cascade="all, delete-orphan"
+        PaymentProfile, backref="Account", cascade="all, delete-orphan", uselist=False
     )
     settings_profile = relationship(
-        SettingsProfile, backref="Account", cascade="all, delete-orphan"
+        SettingsProfile, backref="Account", cascade="all, delete-orphan", uselist=False
     )
-
-    def __init__(self) -> None:
-        """Account Object Constructor."""
-
-        self.id = uuid4()
-        self.account_id = uuid4()
 
     def __str__(self) -> str:
         """String Representation of the Account Object."""
 
-        return f"Account ID: {str(self.account_id)}"
+        return f"Account ID: {str(self.account_id)}, User ID: {self.user_id}, Status: {self.status}"
 
     def __repr__(self) -> str:
-        """String Representation of the Account Object."""
+        """Recreates an Object: Representation of the Account Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"Account({self.account_id}, {self.user_id}, {self.status})"

@@ -1,7 +1,10 @@
 """User: Testing Accounts Serialiser."""
 
+<<<<<<< HEAD
 from uuid import uuid4
 from pydantic import ValidationError
+=======
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError

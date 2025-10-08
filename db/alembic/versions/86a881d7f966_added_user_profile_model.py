@@ -6,13 +6,11 @@ Create Date: 2024-04-08 23:39:03.852511
 
 """
 
-from datetime import datetime
 from typing import Sequence, Union
 from uuid import uuid4
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 from lib.utils.constants.users import (
     Country,

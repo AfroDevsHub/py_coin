@@ -1,20 +1,29 @@
 """Settings: Serialiser for Settings Profile Model."""
 
 from uuid import UUID
-from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+<<<<<<< HEAD
 from lib.exceptions import (
+=======
+from pydantic import validate_call
+from lib.interfaces.exceptions import (
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     SettingsProfileError,
+)
+from lib.interfaces.user.settings import (
+    CreateSettingsProfileData,
+    UpdateSettingsProfileData,
 )
 from models import ENGINE
 from models.user.settings import SettingsProfile
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
-class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
+class SettingsProfileSerialiser(ISerialiser):
     """Serialiser for the Settings Model."""
 
+<<<<<<< HEAD
     __SERIALISER_EXCEPTION__ = SettingsProfileError
     __MUTABLE_KWARGS__: list[str] = [
         "mfa_enabled",
@@ -44,48 +53,65 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
             return self.__get_model_data__(settings_profile)
 
     def create_settings_profile(self, account_id: UUID) -> str:
+=======
+    @validate_call
+    def create(self, data: CreateSettingsProfileData) -> SettingsProfile:
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
         """CRUD Operation: Add Settings."""
 
         with Session(ENGINE) as session:
-            self.account_id = account_id
-
-            try:
-                session.add(self)
-                session.commit()
-            except IntegrityError as exc:
-                raise SettingsProfileError("Settings Not Created.") from exc
-
-            return str(self)
-
-    def update_settings_profile(self, private_id: UUID, **kwargs) -> str:
-        """CRUD Operation: Update Settings."""
-
-        with Session(ENGINE) as session:
-            settings_profile = session.get(SettingsProfile, private_id)
-
-            if settings_profile is None:
-                raise SettingsProfileError("Settings Not Found.")
-
-            for key, value in kwargs.items():
-                if key not in SettingsProfileSerialiser.__MUTABLE_KWARGS__:
-                    raise SettingsProfileError("Invalid Setting to Update.")
-
-                value = self.validate_serialiser_kwargs(key, value)
-                setattr(settings_profile, key, value)
+            settings_profile = SettingsProfile(account_id=data.account_id)
 
             try:
                 session.add(settings_profile)
                 session.commit()
+                session.refresh(settings_profile)
+            except IntegrityError as exc:
+                raise SettingsProfileError("Settings Not Created.") from exc
+
+            return settings_profile
+
+    @validate_call
+    def read(self, model_id: UUID) -> SettingsProfile:
+        """CRUD Operation: Get Settings."""
+
+        with Session(ENGINE) as session:
+            settings_profile = session.get(SettingsProfile, model_id)
+
+            if not settings_profile:
+                raise SettingsProfileError("Settings Not Found.")
+
+            return settings_profile
+
+    @validate_call
+    def update(self, model_id: UUID, data: UpdateSettingsProfileData) -> SettingsProfile:
+        """CRUD Operation: Update Settings."""
+
+        with Session(ENGINE) as session:
+            settings_profile = session.get(SettingsProfile, model_id)
+
+            if settings_profile is None:
+                raise SettingsProfileError("Settings Not Found.")
+
+            for key, value in data.model_dump().items():
+                if value is not None:
+                    setattr(settings_profile, key, value)
+
+            try:
+                session.add(settings_profile)
+                session.commit()
+                session.refresh(settings_profile)
             except IntegrityError as exc:
                 raise SettingsProfileError("Settings not Updated.") from exc
 
-            return str(settings_profile)
+            return settings_profile
 
-    def delete_settings_profile(self, private_id: UUID) -> str:
+    @validate_call
+    def delete(self, model_id: UUID) -> str:
         """CRUD Operation: Delete Settings."""
 
         with Session(ENGINE) as session:
-            settings_profile = session.get(SettingsProfile, private_id)
+            settings_profile = session.get(SettingsProfile, model_id)
 
             if not settings_profile:
                 raise SettingsProfileError("Settings Not Found")
@@ -96,4 +122,4 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
             except IntegrityError as exc:
                 raise SettingsProfileError("Settings not Deleted.") from exc
 
-            return f"Deleted: {private_id}"
+            return f"Deleted: {model_id}"

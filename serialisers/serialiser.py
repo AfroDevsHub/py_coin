@@ -1,5 +1,6 @@
 """Serialiser: Base Serialiser for model Model."""
 
+<<<<<<< HEAD
 from enum import Enum, EnumMeta, EnumType
 from json import dumps
 from typing import Any, Tuple, Union
@@ -34,48 +35,30 @@ from lib.validators.users import (
     validate_username,
 )
 from models.model import BaseModel
+=======
+from abc import ABC, abstractmethod
+from typing import Any
+from uuid import UUID
 
+from sqlalchemy.orm.decl_api import DeclarativeMeta
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 
-class BaseSerialiser:
+class ISerialiser(ABC):
     """A Base/Abstract Serialiser."""
 
-    __table__ = None
-    __SERIALISER_EXCEPTION__: type[BaseException] = ApplicationError
-    __VALIDATORS__ = {
-        # User Profile
-        "status": validate_status,
-        "first_name": validate_first_name,
-        "last_name": validate_last_name,
-        "username": validate_username,
-        "date_of_birth": validate_date_of_birth,
-        "mobile_number": validate_mobile_number,
-        "biography": validate_biography,
-        "interests": validate_interests,
-        "social_media_links": validate_social_media_links,
-        # User model
-        "name": validate_name,
-        "description": validate_description,
-        "balance": validate_balance,
-        "pin": validate_pin,
-        # Settings
-        "data_sharing_preferences": validate_data_sharing_preferences,
-        "profile_visibility_preference": validate_profile_visibility_preference,
-        # Transactions
-        "title": validate_username,
-        # Transactions
-        "amount": validate_transaction_amount,
-        "transaction_status": validate_transaction_status,
-        "contract_status": validate_contract_status,
-        "block_type": validate_block_type,
-        "previous_block_id": validate_block_previous,
-        "next_block_id": validate_block_next,
-    }
+    @abstractmethod
+    def create(self, data: Any) -> DeclarativeMeta:
+        pass
 
-    def __str__(self) -> str:
-        """String Representation of the Base Serialiser."""
+    @abstractmethod
+    def read(self, model_id: UUID) -> DeclarativeMeta:
+        pass
 
-        return "Abstract/Base Serialiser."
+    @abstractmethod
+    def update(self, model_id: UUID, data: Any) -> DeclarativeMeta:
+        pass
 
+<<<<<<< HEAD
     def __repr__(self) -> str:
         """String Representation of the Base Serialiser."""
 
@@ -176,3 +159,8 @@ class BaseSerialiser:
                 }
             )
         return data
+=======
+    @abstractmethod
+    def delete(self, model_id: UUID) -> str:
+        pass
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9

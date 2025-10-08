@@ -6,17 +6,14 @@ from uuid import uuid4, UUID as uuid
 from sqlalchemy import UUID, Column, DateTime, Enum, Float, ForeignKey, String, text
 
 from lib.utils.constants.transactions import TransactionStatus
-from lib.utils.constants.users import Status
 from models import Base
-from models.model import BaseModel
 
 
-class Transaction(Base, BaseModel):
+class Transaction(Base):
     """Model representing a Transaction."""
 
     __tablename__ = "transactions"
     __table_args__ = ({"schema": "blockchain"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
     id: uuid | Column[uuid] = Column(
         "id", UUID(as_uuid=True), primary_key=True, nullable=False
@@ -25,10 +22,16 @@ class Transaction(Base, BaseModel):
         "transaction_id", UUID(as_uuid=True), nullable=False
     )
     sender: uuid | Column[uuid] = Column(
-        "sender", UUID(as_uuid=True), ForeignKey("users.payment_profiles.id"), nullable=False
+        "sender",
+        UUID(as_uuid=True),
+        ForeignKey("users.payment_profiles.id"),
+        nullable=False,
     )
     receiver: uuid | Column[uuid] = Column(
-        "receiver", UUID(as_uuid=True), ForeignKey("users.payment_profiles.id"), nullable=False
+        "receiver",
+        UUID(as_uuid=True),
+        ForeignKey("users.payment_profiles.id"),
+        nullable=False,
     )
     amount: float | Column[float] = Column("amount", Float, nullable=False)
     title: str | Column[str] = Column("title", String(256), nullable=True)
@@ -69,9 +72,9 @@ class Transaction(Base, BaseModel):
     def __str__(self) -> str:
         """String Representation of the Transaction Object."""
 
-        return f"Transaction ID: {str(self.transaction_id)}"
+        return f"Transaction ID: {self.transaction_id}, Sender: {self.sender}, Receiver: {self.receiver}, Amount: {self.amount}, Title: {self.title}, Description: {self.description}, Transaction Status: {self.transaction_status}, Created Date: {self.created_date}, Updated Date: {self.updated_date}"
 
     def __repr__(self) -> str:
         """String Representation of the Transaction Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"Transaction({self.transaction_id}, {self.sender}, {self.receiver}, {self.amount}, {self.title}, {self.description}, {self.transaction_status}, {self.created_date}, {self.updated_date})"

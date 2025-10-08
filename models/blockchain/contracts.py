@@ -8,25 +8,20 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum,
-    Float,
     ForeignKey,
-    LargeBinary,
     String,
     text,
 )
 
 from lib.utils.constants.contracts import ContractStatus
-from lib.utils.constants.users import Status
 from models import Base
-from models.model import BaseModel
 
 
-class Contract(Base, BaseModel):
+class Contract(Base):
     """Model representing a Contract."""
 
     __tablename__ = "contracts"
     __table_args__ = ({"schema": "blockchain"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
     id: uuid | Column[uuid] = Column(
         "id", UUID(as_uuid=True), primary_key=True, nullable=False
@@ -80,9 +75,9 @@ class Contract(Base, BaseModel):
     def __str__(self) -> str:
         """String Representation of the Contract Object."""
 
-        return f"Block ID: {str(self.contract_id)}"
+        return f"Contract ID: {self.contract_id}, Contractor: {self.contractor}, Contractee: {self.contractee}, Title: {self.title}, Description: {self.description}, Contract Status: {self.contract_status}, Created Date: {self.created_date}, Updated Date: {self.updated_date}"
 
     def __repr__(self) -> str:
         """String Representation of the Contract Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"Contract({self.contract_id}, {self.contractor}, {self.contractee}, {self.title}, {self.description}, {self.contract_status}, {self.created_date}, {self.updated_date})"

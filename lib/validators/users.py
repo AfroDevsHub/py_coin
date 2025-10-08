@@ -20,7 +20,7 @@ from lib.utils.constants.users import (
 )
 
 
-def validate_email(email: str, **_) -> str:
+def validate_email(email: str) -> str:
     """Validates Email."""
 
     if not isinstance(email, str):
@@ -30,7 +30,7 @@ def validate_email(email: str, **_) -> str:
     return email
 
 
-def validate_password(password: str, **_) -> str:
+def validate_password(password: str) -> str:
     """Validates Password."""
 
     if not isinstance(password, str):
@@ -40,18 +40,17 @@ def validate_password(password: str, **_) -> str:
     return password
 
 
-def validate_status(status: Status, **_) -> Status:
+def validate_status(status: Status) -> Status:
     """Validates User Status."""
 
     if not isinstance(status, Status):
         raise UserError("Invalid Type for this Attribute.")
-    if status not in [Status.NEW, Status.ACTIVE, Status.DELETED]:
-        raise UserError("Invalid Status.")
+    
     return status
 
 
 def validate_data_sharing_preferences(
-    data_sharing: list[DataSharingPreference], **_
+    data_sharing: list[DataSharingPreference]
 ) -> list[DataSharingPreference]:
     """Validates User Data Sharing."""
 
@@ -68,7 +67,7 @@ def validate_data_sharing_preferences(
 
 
 def validate_profile_visibility_preference(
-    profile_visibility: ProfileVisibility, **_
+    profile_visibility: ProfileVisibility
 ) -> ProfileVisibility:
     """Validates Profile Visibility."""
 
@@ -79,7 +78,7 @@ def validate_profile_visibility_preference(
     return profile_visibility
 
 
-def validate_first_name(first_name: str, **_) -> str:
+def validate_first_name(first_name: str) -> str:
     """Validates First Name."""
 
     if not isinstance(first_name, str):
@@ -89,7 +88,7 @@ def validate_first_name(first_name: str, **_) -> str:
     return first_name
 
 
-def validate_last_name(last_name: str, **_) -> str:
+def validate_last_name(last_name: str) -> str:
     """Validates Last Name."""
 
     if not isinstance(last_name, str):
@@ -99,7 +98,7 @@ def validate_last_name(last_name: str, **_) -> str:
     return last_name
 
 
-def validate_username(username: str, **_) -> str:
+def validate_username(username: str) -> str:
     """Validates Username."""
 
     if not isinstance(username, str):
@@ -109,7 +108,7 @@ def validate_username(username: str, **_) -> str:
     return username
 
 
-def validate_date_of_birth(date_of_birth: date, **_) -> date:
+def validate_date_of_birth(date_of_birth: date) -> date:
     """Validates Date Of Birth."""
 
     if not isinstance(date_of_birth, date):
@@ -119,7 +118,7 @@ def validate_date_of_birth(date_of_birth: date, **_) -> date:
     return date_of_birth
 
 
-def validate_mobile_number(mobile_number: str, **_) -> str:
+def validate_mobile_number(mobile_number: str) -> str:
     """Validates Mobile Number."""
 
     if not isinstance(mobile_number, str):
@@ -129,7 +128,7 @@ def validate_mobile_number(mobile_number: str, **_) -> str:
     return mobile_number
 
 
-def validate_biography(biography: str, **_) -> str:
+def validate_biography(biography: str) -> str:
     """Validates Biography."""
 
     if not isinstance(biography, str):
@@ -139,7 +138,7 @@ def validate_biography(biography: str, **_) -> str:
     return biography
 
 
-def validate_interests(profile_interests: list[Interest], **_) -> list[Interest]:
+def validate_interests(profile_interests: list[Interest]) -> list[Interest]:
     """Validates Profile Interests."""
 
     if not isinstance(profile_interests, list):
@@ -150,7 +149,7 @@ def validate_interests(profile_interests: list[Interest], **_) -> list[Interest]
 
 
 def validate_social_media_links(
-    social_media_links: dict[SocialMediaLink, str], **_
+    social_media_links: dict[SocialMediaLink, str]
 ) -> dict[str, str]:
     """Validates Social Media Links."""
 
@@ -163,7 +162,7 @@ def validate_social_media_links(
     return response
 
 
-def validate_name(name: str, **_) -> str:
+def validate_name(name: str) -> str:
     """Validates Card Name."""
 
     if not isinstance(name, str):
@@ -173,7 +172,7 @@ def validate_name(name: str, **_) -> str:
     return name
 
 
-def validate_description(description: str, **_) -> str:
+def validate_description(description: str) -> str:
     """Validates Card Description."""
 
     if not isinstance(description, str):
@@ -183,7 +182,7 @@ def validate_description(description: str, **_) -> str:
     return description
 
 
-def validate_balance(amount: float, **_) -> float:
+def validate_balance(amount: float) -> float:
     """Validates Card Balance."""
 
     if not isinstance(amount, float):
@@ -193,7 +192,7 @@ def validate_balance(amount: float, **_) -> float:
     return amount
 
 
-def validate_card_type(card_type: CardType, **_) -> CardType:
+def validate_card_type(card_type: CardType) -> CardType:
     """Validates Card Type."""
 
     if not isinstance(card_type, CardType):
@@ -201,7 +200,7 @@ def validate_card_type(card_type: CardType, **_) -> CardType:
     return card_type
 
 
-def validate_card_number(card_number: str, **_) -> str:
+def validate_card_number(card_number: str) -> str:
     """Validates Card Number."""
 
     if not isinstance(card_number, str):
@@ -211,7 +210,7 @@ def validate_card_number(card_number: str, **_) -> str:
     return card_number
 
 
-def validate_cvv_number(cvv_number: str, **_) -> str:
+def validate_cvv_number(cvv_number: str) -> str:
     """Validates CVV Number."""
 
     if not isinstance(cvv_number, str):
@@ -223,7 +222,7 @@ def validate_cvv_number(cvv_number: str, **_) -> str:
     return cvv_number
 
 
-def validate_pin(pin: str, **_) -> str:
+def validate_pin(pin: str) -> str:
     """Validates Card Pin."""
 
     if not isinstance(pin, str):

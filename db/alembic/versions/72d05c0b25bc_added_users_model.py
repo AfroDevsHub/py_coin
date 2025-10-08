@@ -7,7 +7,6 @@ Create Date: 2024-04-02 02:30:57.105818
 """
 
 from typing import Sequence, Union
-from uuid import uuid4
 
 from alembic import op
 import sqlalchemy as sa

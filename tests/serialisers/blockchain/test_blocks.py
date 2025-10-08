@@ -4,15 +4,14 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
+<<<<<<< HEAD
 from config import AppConfig
 from lib.exceptions import BlockError
+=======
+from lib.interfaces.exceptions import BlockError
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from lib.utils.constants.blocks import BlockType
-from lib.utils.constants.users import Status
-from lib.utils.encryption.cryptography import encrypt_data
-from lib.utils.encryption.encoders import get_hash_value
 from models.blockchain.blocks import Block
-from models.user.payments import PaymentProfile
-from models.warehouse.cards import Card
 from serialisers.blockchain.blocks import BlockSerialiser
 from models import ENGINE
 from services.authentication import AbstractService

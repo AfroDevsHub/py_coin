@@ -1,7 +1,6 @@
 """Profiles: User Profile Model."""
 
-from datetime import date, datetime
-from uuid import uuid4, UUID as uuid
+from uuid import uuid4
 from sqlalchemy import (
     ARRAY,
     JSON,
@@ -24,40 +23,41 @@ from lib.utils.constants.users import (
     Status,
 )
 from models import Base
-from models.model import BaseModel
 
 
-class UserProfile(Base, BaseModel):
+class UserProfile(Base):
     """Model representing a User's Profile."""
 
     __tablename__ = "user_profiles"
     __table_args__ = ({"schema": "users"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
     id = Column(
         "id",
         UUID(as_uuid=True),
-        default=text(f"'{str(uuid4())}'"),
-        primary_key=True,
+        default=uuid4,
+        unique=True,
         nullable=False,
+        primary_key=True,
     )
-    profile_id: uuid | Column[uuid] = Column(
+    profile_id = Column(
         "profile_id",
         UUID(as_uuid=True),
-        default=text(f"'{str(uuid4())}'"),
+        default=uuid4,
         nullable=False,
+        unique=True,
     )
-    account_id: uuid | Column[uuid] = Column(
+    account_id = Column(
         "account_id",
         UUID(as_uuid=True),
         ForeignKey("users.accounts.id"),
         nullable=False,
+        unique=True,
     )
     first_name = Column("first_name", String(256), nullable=True)
     last_name = Column("last_name", String(256), nullable=True)
     username = Column("username", String(256), nullable=True)
-    date_of_birth: date | Column[date] = Column("date_of_birth", Date, nullable=True)
-    gender: str | Column[str] = Column(
+    date_of_birth = Column("date_of_birth", Date, nullable=True)
+    gender: Gender | Column[Gender] = Column(
         "gender", Enum(Gender, name="gender"), nullable=True
     )
     profile_picture = Column("profile_picture", LargeBinary, nullable=True)
@@ -96,10 +96,10 @@ class UserProfile(Base, BaseModel):
         default=Status.NEW,
         nullable=False,
     )
-    created_date: datetime | Column[datetime] = Column(
+    created_date = Column(
         "created_date", DateTime, default=text("CURRENT_TIMESTAMP"), nullable=False
     )
-    updated_date: datetime | Column[datetime] = Column(
+    updated_date = Column(
         "updated_date",
         DateTime,
         default=text("CURRENT_TIMESTAMP"),
@@ -107,18 +107,12 @@ class UserProfile(Base, BaseModel):
         nullable=False,
     )
 
-    def __init__(self):
-        """User Profile Constructor."""
-
-        self.id = uuid4()
-        self.profile_id = uuid4()
-
     def __str__(self) -> str:
         """String Representation of the User Profile Object."""
 
-        return f"User Profile ID: {str(self.profile_id)}"
+        return f"Profile ID: {str(self.profile_id)}, Account ID: {self.account_id}, First Name: {self.first_name}, Last Name: {self.last_name}, Username: {self.username}, Status: {self.status}"
 
     def __repr__(self) -> str:
         """String Representation of the User Profile Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"UserProfile({self.profile_id}, {self.account_id}, {self.first_name}, {self.last_name}, {self.username})"

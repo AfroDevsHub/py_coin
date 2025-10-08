@@ -1,7 +1,6 @@
 """Settings: Settings Profile Model."""
 
-from datetime import datetime
-from uuid import uuid4, UUID as uuid
+from uuid import uuid4
 from sqlalchemy import (
     UUID,
     Boolean,
@@ -21,27 +20,31 @@ from lib.utils.constants.users import (
     Theme,
 )
 from models import Base
-from models.model import BaseModel
 
 
-class SettingsProfile(Base, BaseModel):
+class SettingsProfile(Base):
     """Model representing a User's Settings."""
 
     __tablename__ = "settings_profiles"
     __table_args__ = ({"schema": "users"},)
-    __EXCLUDE_ATTRIBUTES__: list[str] = []
 
-    id: uuid | Column[uuid] = Column(
-        "id", UUID(as_uuid=True), primary_key=True, nullable=False
+    id = Column(
+        "id",
+        UUID(as_uuid=True),
+        primary_key=True,
+        nullable=False,
+        default=uuid4,
+        unique=True,
     )
-    settings_id: uuid | Column[uuid] = Column(
-        "settings_id", UUID(as_uuid=True), nullable=False
+    settings_id = Column(
+        "settings_id", UUID(as_uuid=True), nullable=False, default=uuid4, unique=True
     )
-    account_id: uuid | Column[uuid] = Column(
+    account_id = Column(
         "account_id",
         UUID(as_uuid=True),
         ForeignKey("users.accounts.id"),
         nullable=False,
+        unique=True,
     )
     email_status: Verification | Column[Verification] = Column(
         "email_status",
@@ -89,10 +92,10 @@ class SettingsProfile(Base, BaseModel):
         nullable=False,
         default=Theme.LIGHT,
     )
-    created_date: datetime | Column[datetime] = Column(
+    created_date = Column(
         "created_date", DateTime, default=text("CURRENT_TIMESTAMP"), nullable=False
     )
-    updated_date: datetime | Column[datetime] = Column(
+    updated_date = Column(
         "updated_date",
         DateTime,
         default=text("CURRENT_TIMESTAMP"),
@@ -100,18 +103,12 @@ class SettingsProfile(Base, BaseModel):
         nullable=False,
     )
 
-    def __init__(self) -> None:
-        """Settings Object Constructor."""
-
-        self.id = uuid4()
-        self.settings_id = uuid4()
-
     def __str__(self) -> str:
         """String Representation of the Settings Object."""
 
-        return f"Settings Profile ID: {str(self.settings_id)}"
+        return f"Settings ID: {str(self.settings_id)}, Account ID: {self.account_id}, Email Status: {self.email_status}, Communication Status: {self.communication_status}, MFA Enabled: {self.mfa_enabled}, Profile Visibility: {self.profile_visibility_preference}, Data Sharing Preferences: {self.data_sharing_preferences}, Communication Preference: {self.communication_preference}, Location Tracking: {self.location_tracking_enabled}, Cookies Enabled: {self.cookies_enabled}, Theme Preference: {self.theme_preference}"
 
     def __repr__(self) -> str:
         """String Representation of the Settings Object."""
 
-        return f"Application Model: {self.__class__.__name__}"
+        return f"SettingsProfile({self.settings_id}, {self.account_id}, {self.email_status}, {self.communication_status}, {self.mfa_enabled}, {self.profile_visibility_preference}, {self.data_sharing_preferences}, {self.communication_preference}, {self.location_tracking_enabled}, {self.cookies_enabled}, {self.theme_preference})"

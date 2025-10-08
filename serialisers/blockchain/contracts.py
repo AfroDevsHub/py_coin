@@ -1,25 +1,43 @@
 """Contracts: Serialiser for Contract Model."""
 
+from typing import Any
 from uuid import UUID
-from sqlalchemy import String, cast, select, UUID as uuid
+from pydantic import BaseModel, validate_call
+from sqlalchemy import String, cast, select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+<<<<<<< HEAD
 from lib.exceptions import ContractError
+=======
+from lib.interfaces.exceptions import ContractError
+from lib.utils.constants.users import Status
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from lib.utils.encryption.encoders import get_hash_value
+from lib.validators.contracts import validate_contract_status
 from models import ENGINE
 from models.blockchain.contracts import Contract
 from models.user.payments import PaymentProfile
 from models.warehouse.cards import Card
-from serialisers.serialiser import BaseSerialiser
+from serialisers.serialiser import ISerialiser
 
 
-class ContractSerialiser(Contract, BaseSerialiser):
+class UpdateContractData(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    contract_status: Status | None = None
+
+
+class ContractSerialiser(ISerialiser):
     """Serialiser for the Contract Model."""
 
+<<<<<<< HEAD
     __SERIALISER_EXCEPTION__ = ContractError
     __MUTABLE_KWARGS__: list[str] = ["title", "description", "contract_status"]
 
+=======
+    @validate_call
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     def get_contract(self, contract_id: str) -> dict[str, Any]:
         """CRUD Operation: Read Contract."""
 
@@ -34,6 +52,7 @@ class ContractSerialiser(Contract, BaseSerialiser):
 
             return self.__get_model_data__(contract)
 
+    @validate_call
     def create_contract(self, contractor: UUID, contractee: UUID, contract: str) -> str:
         """CRUD Operation: Create Contract."""
 
@@ -75,8 +94,13 @@ class ContractSerialiser(Contract, BaseSerialiser):
 
             return str(self)
 
+    @validate_call
     def update_contract(
-        self, private_id: UUID, contractor_signiture: str, contractee_signiture: str, **kwargs
+        self,
+        private_id: str,
+        contractor_signiture: str,
+        contractee_signiture: str,
+        data: UpdateContractData,
     ) -> str:
         """CRUD Operation: Update Contract."""
 
@@ -86,17 +110,14 @@ class ContractSerialiser(Contract, BaseSerialiser):
             if contract is None:
                 raise ContractError("Contract Not Found.")
 
-            if contract.contractor_signiture != contractor_signiture:
+            if str(contract.contractor_signiture) != contractor_signiture:
                 raise ContractError("Sender Not Authorised.")
-            if contract.contractee_signiture != contractee_signiture:
+            if str(contract.contractee_signiture) != contractee_signiture:
                 raise ContractError("Receiver Not Authorised.")
 
-            for key, value in kwargs.items():
-                if key not in ContractSerialiser.__MUTABLE_KWARGS__:
-                    raise ContractError("Invalid Contract.")
-                if value != getattr(contract, key):
-                    value = self.validate_serialiser_kwargs(key, value, model=contract)
-                    setattr(contract, key, value)
+            for key, value in data.model_dump().items():
+                if value is not None and key == "contract_status":
+                    contract.contract_status = validate_contract_status(value, contract)
 
             try:
                 session.add(contract)
@@ -106,6 +127,7 @@ class ContractSerialiser(Contract, BaseSerialiser):
 
             return str(Contract)
 
+    @validate_call
     def delete_contract(self, private_id: UUID) -> str:
         """CRUD Operation: Delete Contract."""
 
