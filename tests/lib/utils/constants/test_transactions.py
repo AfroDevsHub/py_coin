@@ -9,7 +9,7 @@ from lib.utils.constants.transactions import TransactionStatus
     "data",
     list(TransactionStatus),
 )
-def test_transaction_status_enum(data):
+def test_transaction_status_enum(data: TransactionStatus) -> None:
     """Testing Transaction Statuss Enum."""
 
     assert isinstance(data.value, str)

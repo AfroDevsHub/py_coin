@@ -4,7 +4,7 @@ from datetime import datetime
 from os import getenv
 from uuid import uuid4, UUID
 from cryptography.fernet import Fernet
-from lib.utils.constants.users import DateFormat
+from lib.utils.constants.users import DateTimeFormat
 from lib.validators.config import (
     validate_card_length,
     validate_cvv_length,
@@ -44,14 +44,14 @@ class AppConfig:
     def start_date(self) -> str:
         """Getter: Start Datetime."""
 
-        return validate_start_date(self.__START_DATE__).strftime(DateFormat.LONG.value)
+        return validate_start_date(self.__START_DATE__).strftime(DateTimeFormat.STANDARD.value)
 
     @property
     def end_date(self) -> str:
         """Getter: End Datetime."""
 
         return validate_end_date(self.__end_date__, self.__START_DATE__).strftime(
-            DateFormat.LONG.value
+            DateTimeFormat.STANDARD.value
         )
 
     @end_date.setter

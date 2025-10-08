@@ -1,16 +1,22 @@
 """User: Testing Accounts Serialiser."""
 
+<<<<<<< HEAD
+from uuid import uuid4
+from pydantic import ValidationError
+=======
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import AccountError, UserError
+from lib.exceptions import AccountError, UserError
+from lib.types.user import AccountData
 from lib.utils.constants.users import Status
 from models.user.accounts import Account
 from serialisers.user.accounts import AccountSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 
@@ -89,7 +95,7 @@ def test_accountprofileserialiser_update_valid_status(get_accounts, data):
 
     for account in get_accounts:
         with Session(ENGINE) as session:
-            AccountSerialiser().update_account(account.id, status=data)
+            AccountSerialiser().update_account(account.id, AccountData(status=data))
             account = session.get(Account, account.id)
             assert account.id is not None
             assert account.status == data
@@ -103,7 +109,7 @@ def test_accountprofileserialiser_update_invalid_status(get_accounts, data):
     """Testing Account Serialiser: Update Account."""
 
     for account in get_accounts:
-        with raises((UserError, AccountError)):
-            AccountSerialiser().update_account(account.id, status=data)
+        with raises((UserError, AccountError, ValidationError)):
+            AccountSerialiser().update_account(account.id, AccountData(status=data))
             if not isinstance(data, Status):
                 AccountSerialiser().update_account(data)

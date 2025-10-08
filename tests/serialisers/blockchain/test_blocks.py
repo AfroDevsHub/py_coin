@@ -4,13 +4,18 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
+<<<<<<< HEAD
+from config import AppConfig
+from lib.exceptions import BlockError
+=======
 from lib.interfaces.exceptions import BlockError
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from lib.utils.constants.blocks import BlockType
 from models.blockchain.blocks import Block
 from serialisers.blockchain.blocks import BlockSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

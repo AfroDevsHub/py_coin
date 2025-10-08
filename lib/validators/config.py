@@ -2,7 +2,8 @@
 
 from datetime import datetime
 from uuid import UUID
-from lib.interfaces.exceptions import ApplicationError
+
+from lib.exceptions import ApplicationError
 
 
 def validate_salt_value(salt_value: UUID) -> UUID:

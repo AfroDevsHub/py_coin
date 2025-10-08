@@ -8,10 +8,11 @@ from sqlalchemy.exc import IntegrityError
 from lib.utils.constants.users import Status
 from models import ENGINE
 from models.user.accounts import Account
-from tests.conftest import run_test_teardown
+from models.user.profiles import UserProfile
+from conftest import run_test_teardown
 
 
-def test_account_invalid_no_args():
+def test_account_invalid_no_args() -> None:
     """Testing Account With Missing Attributes."""
 
     with Session(ENGINE) as session:
@@ -21,17 +22,17 @@ def test_account_invalid_no_args():
             session.commit()
 
 
-def test_account_invalid_args():
+def test_account_invalid_args() -> None:
     """Testing Constructor, for Invalid Arguments."""
 
     with Session(ENGINE) as session:
         with raises(TypeError):
-            account = Account("email", "password")
+            account = Account("email", "password") # type: ignore
             session.add(account)
             session.commit()
 
 
-def test_account_valid(get_users):
+def test_account_valid(get_users: UserProfile) -> None:
     """Testing a Valid Account Constructor, with Required Arguments."""
 
     for user in get_users:

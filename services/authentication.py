@@ -1,5 +1,13 @@
 """Authentication: User Authentication Services."""
 
+<<<<<<< HEAD
+from datetime import datetime, timedelta
+from json import dumps, loads
+from uuid import uuid4
+from config import AppConfig
+from lib.responses import ServiceResponse
+from lib.types.user import Logindata, UserData
+=======
 from datetime import datetime
 from typing import Any, cast
 from uuid import UUID, uuid4
@@ -9,6 +17,7 @@ from pydantic import validate_call
 from lib.decorators.services import handle_service_errors
 from lib.interfaces.responses import ServiceResponse
 from lib.interfaces.services import LoginData
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from lib.utils.constants.responses import ServiceStatus
 from lib.utils.helpers.users import generate_jwt_token
 from serialisers.user.users import CreateUserData, UserSerialiser
@@ -32,6 +41,20 @@ class AuthenticationService:
             cls.__instance = super().__new__(cls, *args, **kwargs)
         return cls.__instance
 
+<<<<<<< HEAD
+    def register_user(self, email: str, password: str) -> ServiceResponse:
+        """Registers User."""
+
+        response = UserSerialiser().create_user(email, password)
+        user_id = self.get_public_id(response)
+        data = UserSerialiser().get_user(user_id)
+        return ServiceResponse(
+            message=response, status=ServiceStatus.SUCCESS, data={"user": data}
+        )
+
+    def login_user(
+        self, email: str, password: str, user_data: Logindata
+=======
     @handle_service_errors
     @validate_call
     def register_user(self, email: str, password: str) -> ServiceResponse:
@@ -50,6 +73,7 @@ class AuthenticationService:
     @validate_call
     def login_user(
         self, email: str, password: str, meta_data: LoginData
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     ) -> ServiceResponse:
         """Logs a User In."""
 
@@ -68,7 +92,7 @@ class AuthenticationService:
 
         session_id = uuid4()
         token = generate_jwt_token(
-            user_id=str(user.user_id),
+            user_id=str(user.id),
             login_id=str(login.id),
             session_id=str(session_id),
             email=str(user.email),
@@ -104,7 +128,11 @@ class AuthenticationService:
         return ServiceResponse(
             message="User No Longer Authenticated.",
             status=ServiceStatus.SUCCESS,
+<<<<<<< HEAD
+            data={"id": login_id},
+=======
             data={
                 "login": login,
             },
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
         )

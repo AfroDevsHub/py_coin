@@ -3,8 +3,12 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+<<<<<<< HEAD
+from lib.exceptions import (
+=======
 from pydantic import validate_call
 from lib.interfaces.exceptions import (
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     SettingsProfileError,
 )
 from lib.interfaces.user.settings import (
@@ -19,8 +23,40 @@ from serialisers.serialiser import ISerialiser
 class SettingsProfileSerialiser(ISerialiser):
     """Serialiser for the Settings Model."""
 
+<<<<<<< HEAD
+    __SERIALISER_EXCEPTION__ = SettingsProfileError
+    __MUTABLE_KWARGS__: list[str] = [
+        "mfa_enabled",
+        "location_tracking_enabled",
+        "cookies_enabled",
+        "email_status",
+        "data_sharing_preferences",
+        "communication_preference",
+        "theme_preference",
+        "profile_visibility_preference",
+        "mfa_last_used_date",
+        "communication_status",
+    ]
+
+    def get_settings_profile(self, settings_id: UUID) -> dict[str, Any]:
+        """CRUD Operation: Get Settings."""
+
+        with Session(ENGINE) as session:
+            query = select(SettingsProfile).filter(
+                cast(SettingsProfile.settings_id, uuid) == settings_id
+            )
+            settings_profile = session.execute(query).scalar_one_or_none()
+
+            if not settings_profile:
+                raise SettingsProfileError("Settings Not Found.")
+
+            return self.__get_model_data__(settings_profile)
+
+    def create_settings_profile(self, account_id: UUID) -> str:
+=======
     @validate_call
     def create(self, data: CreateSettingsProfileData) -> SettingsProfile:
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
         """CRUD Operation: Add Settings."""
 
         with Session(ENGINE) as session:

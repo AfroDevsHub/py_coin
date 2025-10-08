@@ -5,7 +5,7 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import SettingsProfileError
+from lib.exceptions import SettingsProfileError
 from lib.utils.constants.users import (
     Communication,
     DataSharingPreference,
@@ -17,7 +17,7 @@ from models.user.settings import SettingsProfile
 from serialisers.user.settings import SettingsProfileSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

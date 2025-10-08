@@ -4,13 +4,13 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import TransactionError
+from lib.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
 from models.blockchain.transactions import Transaction
 from serialisers.blockchain.transactions import TransactionSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

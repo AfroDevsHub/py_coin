@@ -3,14 +3,16 @@
 from base64 import b64encode
 from datetime import date
 
+from pydantic import ValidationError
 from pytest import mark, raises
+from lib.types.user import ProfileData
 from services.authentication import AbstractService
 from tests.test_utils.utils import generate_socials, check_invalid_ids
 from sqlalchemy import cast, String
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import UserError, UserProfileError
+from lib.exceptions import UserError, UserProfileError
 from lib.utils.constants.users import (
     Country,
     Gender,
@@ -23,7 +25,7 @@ from lib.utils.constants.users import (
 from models.user.profiles import UserProfile
 from serialisers.user.profiles import UserProfileSerialiser
 from models import ENGINE
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def __read_file__():
@@ -143,7 +145,7 @@ def test_userprofileserialiser_update_valid(get_profiles, data):
 
     for profile in get_profiles:
         with Session(ENGINE) as session:
-            UserProfileSerialiser().update_user_profile(profile.id, **data)
+            UserProfileSerialiser().update_user_profile(profile.id, ProfileData(**data))
         profile = session.get(UserProfile, profile.id)
 
         for key, value in data.items():
@@ -216,5 +218,5 @@ def test_userprofileserialiser_update_invalid(get_profiles, data):
     """Testing UserProfile Serialiser: Update UserProfile."""
 
     for profile in get_profiles:
-        with raises((UserProfileError, UserError)):
-            UserProfileSerialiser().update_user_profile(profile.id, **data)
+        with raises((UserProfileError, UserError, ValidationError)):
+            UserProfileSerialiser().update_user_profile(profile.id, ProfileData(**data))

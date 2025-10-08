@@ -9,12 +9,12 @@ from sqlalchemy.exc import DataError, ProgrammingError
 from config import AppConfig
 from lib.utils.encryption.encoders import get_hash_value
 from serialisers.warehouse.cards import CardSerialiser
-from lib.interfaces.exceptions import CardValidationError, UserError
+from lib.exceptions import CardValidationError, UserError
 from lib.utils.constants.users import Status, CardType
 from models import ENGINE
 from models.warehouse.cards import Card
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

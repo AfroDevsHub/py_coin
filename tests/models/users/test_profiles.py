@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from lib.utils.constants.users import Gender
 from models import ENGINE
 from models.user.profiles import UserProfile
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_user_profile_invalid_no_args():

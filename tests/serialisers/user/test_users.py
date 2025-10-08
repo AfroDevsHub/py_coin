@@ -3,19 +3,21 @@
 import json
 from uuid import uuid4
 
+from pydantic import ValidationError
 from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import ProgrammingError, DataError
 
 from config import AppConfig
-from lib.interfaces.exceptions import UserError
+from lib.exceptions import UserError
+from lib.types.user import UserUpdateData
 from lib.utils.constants.users import Status
 from lib.utils.encryption.encoders import get_hash_value
 from serialisers.user.users import UserSerialiser
 from models import ENGINE
 from models.user.users import User
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 
@@ -111,7 +113,7 @@ def test_userserialiser_update_valid(get_users, data):
 
     for user in get_users:
         with Session(ENGINE) as session:
-            UserSerialiser().update_user(user.id, password=data[0], status=data[1])
+            UserSerialiser().update_user(user.id, UserUpdateData(password=data[0], status=data[1]))
             user = session.get(User, user.id)
 
             assert user.id is not None
@@ -143,7 +145,7 @@ def test_userserialiser_update_invalid(get_users, data):
     """Testing User Serialiser: Invalid Update User [PASSWORD]."""
 
     for user in get_users:
-        with raises((UserError, DataError, TypeError)):
-            UserSerialiser().update_user(user.id, password=data[0], status=data[1])
+        with raises((UserError, DataError, TypeError, ValidationError)):
+            UserSerialiser().update_user(user.id, UserUpdateData(password=data[0], status=data[1]))
             if not isinstance(data, list):
                 UserSerialiser().update_user("Invalid User ID")

@@ -7,13 +7,13 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import LoginHistoryError
+from lib.exceptions import LoginHistoryError
 from lib.utils.constants.users import Country, LoginMethod
 from models.warehouse.logins import LoginHistory
 from serialisers.warehouse.logins import LoginHistorySerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

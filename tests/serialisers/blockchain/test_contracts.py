@@ -5,14 +5,14 @@ from pytest import mark, raises
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DataError, ProgrammingError
 
-from lib.interfaces.exceptions import ContractError
+from lib.exceptions import ContractError
 from lib.utils.constants.contracts import ContractStatus
 from lib.utils.encryption.cryptography import encrypt_data
 from models.blockchain.contracts import Contract
 from serialisers.blockchain.contracts import ContractSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

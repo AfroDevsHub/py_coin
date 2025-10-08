@@ -3,8 +3,12 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+<<<<<<< HEAD
+from lib.exceptions import (
+=======
 from pydantic import validate_call
 from lib.interfaces.exceptions import (
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     LoginHistoryError,
 )
 from lib.interfaces.warehouse.login_history import CreateLoginHistory, UpdateLoginHistory
@@ -20,6 +24,9 @@ class LoginHistorySerialiser(ISerialiser):
     def create(self, data: CreateLoginHistory) -> LoginHistory:
         """CRUD Operation: Add Login History."""
 
+<<<<<<< HEAD
+    def get_login_history(self, login_id: UUID) -> dict[str, Any]:
+=======
         with Session(ENGINE) as session:
             login_history = LoginHistory(user_id=data.user_id)
 
@@ -34,6 +41,7 @@ class LoginHistorySerialiser(ISerialiser):
 
     @validate_call
     def read(self, model_id: UUID) -> LoginHistory:
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
         """CRUD Operation: Get Login History."""
 
         with Session(ENGINE) as session:

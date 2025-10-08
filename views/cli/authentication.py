@@ -43,8 +43,11 @@ def render_login_user() -> ServiceResponse:
     return response
 
 
-def get_user_meta_data() -> dict[str, str]:
-    ip_info = requests.get("https://ipinfo.io/json").json()
+def get_user_meta_data(ip: str | None = None) -> dict[str, str]:
+    if ip:
+        ip_info = requests.get(f"https://ipinfo.io/{ip}/json").json()
+    else:
+        ip_info = requests.get(f"https://ipinfo.io/json").json()
     result = {
         "region": ip_info.get("region"),
         "country": ip_info.get("country"),

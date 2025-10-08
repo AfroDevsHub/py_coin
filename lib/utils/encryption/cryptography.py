@@ -2,7 +2,7 @@
 
 from cryptography.fernet import Fernet
 from config import AppConfig
-from lib.interfaces.exceptions import UserError
+from lib.exceptions import UserError
 
 
 def encrypt_data(data: bytes) -> str:

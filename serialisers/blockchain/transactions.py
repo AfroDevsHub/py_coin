@@ -7,8 +7,12 @@ from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+<<<<<<< HEAD
+from lib.exceptions import TransactionError
+=======
 from lib.interfaces.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from lib.utils.encryption.encoders import get_hash_value
 from lib.validators.transactions import (
     validate_transaction_amount,
@@ -33,7 +37,18 @@ class UpdateTransactionData(BaseModel):
 class TransactionSerialiser(ISerialiser):
     """Serialiser for the Transaction Model."""
 
+<<<<<<< HEAD
+    __SERIALISER_EXCEPTION__ = TransactionError
+    __MUTABLE_KWARGS__: list[str] = [
+        "title",
+        "description",
+        "amount",
+        "transaction_status",
+    ]
+
+=======
     @validate_call
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
     def get_transaction(self, transaction_id: str) -> dict[str, Any]:
         """CRUD Operation: Read Transaction."""
 

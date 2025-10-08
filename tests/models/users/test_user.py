@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from models import ENGINE
 from models.user.users import User
 from lib.utils.constants.users import Role, Status
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_user_invalid_no_args():

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from pytest import raises
 from config import AppConfig
-from lib.utils.constants.users import DateFormat
+from lib.utils.constants.users import DateTimeFormat
 
 
 def test_app_config_str_repr():
@@ -22,10 +22,12 @@ def test_app_config_session_id():
 def test_app_config_start_date():
     """Test AppConfig Init - Start Date."""
 
-    assert str(AppConfig().start_date) < (
-        (datetime.now() + timedelta(seconds=8)).strftime(DateFormat.LONG.value)
-    ) and str(AppConfig().start_date) > (datetime.now() - timedelta(seconds=8)).strftime(
-        DateFormat.LONG.value
+    assert str(AppConfig().start_date) <= (
+        (datetime.now() + timedelta(seconds=8)).strftime(DateTimeFormat.STANDARD.value)
+    ) and str(AppConfig().start_date) >= (
+        datetime.now() - timedelta(seconds=8)
+    ).strftime(
+        DateTimeFormat.STANDARD.value
     )
 
 
@@ -33,15 +35,15 @@ def test_app_config_start_date_setter():
     """Test AppConfig Start Date Setter."""
 
     with raises(AttributeError):
-        AppConfig().start_date = datetime.now().strftime(DateFormat.LONG.value)
+        AppConfig().start_date = datetime.now().strftime(DateTimeFormat.STANDARD.value)
 
 
 def test_app_config_end_date():
     """Test AppConfig Init - End Date."""
 
     assert datetime.strptime(
-        str(AppConfig().end_date), DateFormat.LONG.value
-    ) >= datetime.strptime(str(AppConfig().start_date), DateFormat.LONG.value)
+        str(AppConfig().end_date), DateTimeFormat.STANDARD.value
+    ) >= datetime.strptime(str(AppConfig().start_date), DateTimeFormat.STANDARD.value)
 
 
 def test_app_config_end_date_setter():

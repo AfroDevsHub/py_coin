@@ -3,7 +3,7 @@
 from pytest import fixture
 from sqlalchemy.orm import Session
 
-from lib.interfaces.exceptions import ApplicationError
+from lib.exceptions import ApplicationError
 from models import ENGINE
 from tests.test_utils.blockchain import (
     create_blocks,

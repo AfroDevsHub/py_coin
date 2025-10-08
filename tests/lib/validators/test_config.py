@@ -1,11 +1,12 @@
 """Validators: Testing Application Config Module."""
 
 from datetime import date, datetime, timedelta
+from typing import Any
 from uuid import uuid4
 
 from pytest import mark, raises
 
-from lib.interfaces.exceptions import ApplicationError
+from lib.exceptions import ApplicationError
 from lib.validators.config import (
     validate_cvv_length,
     validate_end_date,
@@ -21,7 +22,7 @@ from lib.validators.config import (
     "data",
     [uuid4(), uuid4()],
 )
-def test_validate_salt_value(data):
+def test_validate_salt_value(data: Any) -> None:
     """Tests Validating Salt Value."""
 
     assert validate_salt_value(data)
@@ -31,7 +32,7 @@ def test_validate_salt_value(data):
     "data",
     [1, None, validate_card_length],
 )
-def test_invalidate_salt_value(data):
+def test_invalidate_salt_value(data: Any) -> None:
     """Tests Invalidates Salt Value."""
 
     with raises(ApplicationError):
@@ -42,7 +43,7 @@ def test_invalidate_salt_value(data):
     "data",
     ["fernet-key", "Any Valid String."],
 )
-def test_validate_fernet_key(data):
+def test_validate_fernet_key(data: Any) -> None:
     """Tests Validating Fernet Key."""
 
     assert validate_fernet_key(data) == data
@@ -52,7 +53,7 @@ def test_validate_fernet_key(data):
     "data",
     [1, None, validate_card_length],
 )
-def test_invalidate_fernet_key(data):
+def test_invalidate_fernet_key(data: Any) -> None:
     """Tests Invalidates Fernet Key."""
 
     with raises(ApplicationError):
@@ -63,7 +64,7 @@ def test_invalidate_fernet_key(data):
     "data",
     [datetime.now(), datetime(2010, 12, 31, 15, 1, 15), datetime(1972, 1, 15, 0, 0, 0)],
 )
-def test_validate_start_date(data):
+def test_validate_start_date(data: Any) -> None:
     """Tests Validating Start Date."""
 
     assert validate_start_date(data) == data
@@ -73,7 +74,7 @@ def test_validate_start_date(data):
     "data",
     ["2022-05-20", date(2010, 12, 31), date(1972, 1, 15), 20220519],
 )
-def test_invalidate_start_date(data):
+def test_invalidate_start_date(data: Any) -> None:
     """Tests Invalidates Start Date."""
 
     with raises(ApplicationError):
@@ -94,7 +95,7 @@ def test_invalidate_start_date(data):
         ),
     ],
 )
-def test_validate_end_date(data):
+def test_validate_end_date(data: Any) -> None:
     """Tests Validating End Date."""
 
     assert validate_end_date(data[0], data[1]) == data[0]
@@ -117,7 +118,7 @@ def test_validate_end_date(data):
         (20220519, 20100515),
     ],
 )
-def test_invalidate_end_date(data):
+def test_invalidate_end_date(data: Any) -> None:
     """Tests Invalidates End Date."""
 
     with raises(ApplicationError):
@@ -128,7 +129,7 @@ def test_invalidate_end_date(data):
     "data",
     [9, 15, 27],
 )
-def test_validate_card_length(data):
+def test_validate_card_length(data: Any) -> None:
     """Tests Validating Card length."""
 
     assert validate_card_length(data) == data
@@ -138,7 +139,7 @@ def test_validate_card_length(data):
     "data",
     [-9, 0, "27", 27.0, 0.0],
 )
-def test_invalidate_card_length(data):
+def test_invalidate_card_length(data: Any) -> None:
     """Tests Validating Card length."""
 
     with raises(ApplicationError):
@@ -149,7 +150,7 @@ def test_invalidate_card_length(data):
     "data",
     [3, 19, 115, 270],
 )
-def test_validate_cvv_length(data):
+def test_validate_cvv_length(data: Any) -> None:
     """Tests Validating CVV Length."""
 
     assert validate_cvv_length(data) == data
@@ -159,7 +160,7 @@ def test_validate_cvv_length(data):
     "data",
     [-9, 0, "27", 27.0, 0.0],
 )
-def test_invalidate_cvv_length(data):
+def test_invalidate_cvv_length(data: Any) -> None:
     """Tests Invalidates CVV Length."""
 
     with raises(ApplicationError):
@@ -170,7 +171,7 @@ def test_invalidate_cvv_length(data):
     "data",
     [uuid4(), uuid4()],
 )
-def test_validate_session_id(data):
+def test_validate_session_id(data: Any) -> None:
     """Tests Validating Session ID."""
 
     assert validate_session_id(data) == data
@@ -180,7 +181,7 @@ def test_validate_session_id(data):
     "data",
     [1, None, validate_card_length, "uuid value as a string"],
 )
-def test_invalidate_session_id(data):
+def test_invalidate_session_id(data: Any) -> None:
     """Tests Invalidates Session ID."""
 
     with raises(ApplicationError):

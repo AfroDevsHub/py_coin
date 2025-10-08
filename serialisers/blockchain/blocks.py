@@ -1,14 +1,23 @@
 """Blocks: Serialiser for Block Model."""
 
+<<<<<<< HEAD
+from typing import Any, Optional
+=======
 from typing import Any
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from uuid import UUID
 from pydantic import BaseModel, validate_call
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+<<<<<<< HEAD
+from lib.exceptions import BlockError
+from lib.validators.blocks import validate_block_next, validate_block_previous
+=======
 from lib.interfaces.exceptions import BlockError
 from lib.utils.constants.blocks import BlockType
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
 from models import ENGINE
 from models.blockchain.blocks import Block
 from serialisers.serialiser import ISerialiser
@@ -25,8 +34,20 @@ class BlockData(BaseModel):
 class BlockSerialiser(ISerialiser):
     """Serialiser for the Block Model."""
 
+<<<<<<< HEAD
+    __SERIALISER_EXCEPTION__ = BlockError
+    __MUTABLE_KWARGS__: list[str] = ["block_type", "previous_block_id", "next_block_id"]
+
+    def get_block(
+        self,
+        block_id: Optional[UUID] = None,
+        transaction_id: Optional[UUID] = None,
+        contract_id: Optional[UUID] = None,
+    ) -> dict[str, Any]:
+=======
     @validate_call  # type: ignore
     def get_block(self, block_id: UUID) -> dict[str, Any]:
+>>>>>>> ce27e146fbe2699dc419332232c255e5239efcf9
         """CRUD Operation: Read Block."""
 
         with Session(ENGINE) as session:

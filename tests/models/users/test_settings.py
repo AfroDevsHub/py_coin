@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.utils.constants.users import Communication, Verification
 from models import ENGINE
 from models.user.settings import SettingsProfile
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_valid_settings_profile(get_accounts):
