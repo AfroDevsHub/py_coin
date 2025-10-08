@@ -1,5 +1,6 @@
 """Encryption: Testing Encoders Module."""
 
+from typing import Any
 from uuid import uuid4
 from pytest import mark, raises
 from lib.utils.encryption.encoders import get_hash_value
@@ -13,7 +14,7 @@ from lib.utils.encryption.encoders import get_hash_value
         (str(123456789), str(123456789)),
     ],
 )
-def test_get_hash_value(data):
+def test_get_hash_value(data: Any) -> None:
     """Test Valid Hash Value."""
 
     assert len(get_hash_value(data[0])) == 64
@@ -29,7 +30,7 @@ def test_get_hash_value(data):
         (str(123456789), uuid4()),
     ],
 )
-def test_get_hash_value_invalid_salt(data):
+def test_get_hash_value_invalid_salt(data: Any) -> None:
     """Test Invalid Salt Value."""
 
     with raises(ValueError, match="Salt must be a String."):
@@ -44,7 +45,7 @@ def test_get_hash_value_invalid_salt(data):
         (None, 123456789),
     ],
 )
-def test_get_hash_value_invalid_value(data):
+def test_get_hash_value_invalid_value(data: Any) -> None:
     """Test Invalid Hash Value."""
 
     with raises(ValueError, match="Value must be a String."):

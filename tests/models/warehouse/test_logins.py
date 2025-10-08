@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from models import ENGINE
 from models.warehouse.logins import LoginHistory
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_login_invalid_no_args():

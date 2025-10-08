@@ -145,7 +145,7 @@ class BaseSerialiser:
         return encrypt_data(dumps(data).encode())
 
     @classmethod
-    def __get_model_data__(cls, model: BaseModel) -> dict:
+    def __get_model_data__(cls, model: BaseModel) -> dict[str, Any]:
         """Gets the Model Data."""
 
         data = model.to_dict()

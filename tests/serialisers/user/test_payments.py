@@ -12,7 +12,7 @@ from serialisers.user.payments import PaymentProfileSerialiser
 from lib.exceptions import PaymentProfileError
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

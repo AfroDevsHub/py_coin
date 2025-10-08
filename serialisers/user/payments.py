@@ -21,7 +21,7 @@ class PaymentProfileSerialiser(PaymentProfile, BaseSerialiser):
         "balance",
     ]
 
-    def get_payment_profile(self, payment_id: UUID) -> dict:
+    def get_payment_profile(self, payment_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get Payment Profile."""
 
         with Session(ENGINE) as session:

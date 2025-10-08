@@ -33,7 +33,7 @@ class UserProfileSerialiser(UserProfile, BaseSerialiser):
         "status",
     ]
 
-    def get_user_profile(self, profile_id: UUID) -> dict:
+    def get_user_profile(self, profile_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get User Profile."""
 
         with Session(ENGINE) as session:

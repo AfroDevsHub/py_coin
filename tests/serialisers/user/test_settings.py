@@ -18,7 +18,7 @@ from models.user.settings import SettingsProfile
 from serialisers.user.settings import SettingsProfileSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

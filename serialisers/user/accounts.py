@@ -17,7 +17,7 @@ class AccountSerialiser(Account, BaseSerialiser):
 
     __SERIALISER_EXCEPTION__ = AccountError
 
-    def get_account(self, account_id: UUID) -> dict:
+    def get_account(self, account_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Read Account."""
 
         with Session(ENGINE) as session:

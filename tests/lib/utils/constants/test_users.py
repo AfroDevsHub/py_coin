@@ -18,7 +18,7 @@ from lib.utils.constants.users import (
     "data",
     ["test@test.co.za", "name123@testing.com", "testing1223@testing.co.org"],
 )
-def test_regex_constants_email_success(data):
+def test_regex_constants_email_success(data: str) -> None:
     """Testing Email Regex Match - Valid Email"""
 
     assert Regex.EMAIL.value.match(data) is not None
@@ -34,7 +34,7 @@ def test_regex_constants_email_success(data):
         "testing1223@testing.comutil",
     ],
 )
-def test_regex_constants_email_error(data):
+def test_regex_constants_email_error(data: str) -> None:
     """Testing Email Regex Match - Invalid Email"""
 
     assert Regex.EMAIL.value.match(data) is None
@@ -48,7 +48,7 @@ def test_regex_constants_email_error(data):
         "passwording1223@passwording.co.org",
     ],
 )
-def test_regex_constants_password_success(data):
+def test_regex_constants_password_success(data: str) -> None:
     """Testing Password Regex Match - Valid Password"""
 
     assert Regex.PASSWORD.value.match(data) is not None
@@ -58,7 +58,7 @@ def test_regex_constants_password_success(data):
     "data",
     ["@test", "nametestingcom", "122312345678"],
 )
-def test_regex_constants_password_error(data):
+def test_regex_constants_password_error(data: str) -> None:
     """Testing Password Regex Match - Invalid Password"""
 
     assert Regex.PASSWORD.value.match(data) is None
@@ -68,7 +68,7 @@ def test_regex_constants_password_error(data):
     "data",
     list(Gender),
 )
-def test_gender_enum(data):
+def test_gender_enum(data: Gender) -> None:
     """Testing Genders Enum."""
 
     assert isinstance(data.value, tuple)
@@ -80,7 +80,7 @@ def test_gender_enum(data):
     "data",
     list(Status),
 )
-def test_status_enum(data):
+def test_status_enum(data: Status) -> None:
     """Testing Statuss Enum."""
 
     assert isinstance(data.value, str)
@@ -90,7 +90,7 @@ def test_status_enum(data):
     "data",
     list(Role),
 )
-def test_role_enum(data):
+def test_role_enum(data: Role) -> None:
     """Testing Roles Enum."""
 
     assert isinstance(data.value, str)
@@ -100,7 +100,7 @@ def test_role_enum(data):
     "data",
     list(Verification),
 )
-def test_verification_enum(data):
+def test_verification_enum(data: Verification) -> None:
     """Testing Verification Enum."""
 
     assert isinstance(data.value, str)
@@ -110,7 +110,7 @@ def test_verification_enum(data):
     "data",
     list(DevicePermission),
 )
-def test_devicepermission_enum(data):
+def test_devicepermission_enum(data: DevicePermission) -> None:
     """Testing Device Permission Enum."""
 
     assert isinstance(data.value, str)
@@ -120,7 +120,7 @@ def test_devicepermission_enum(data):
     "data",
     list(Communication),
 )
-def test_communication_enum(data):
+def test_communication_enum(data: Communication) -> None:
     """Testing Communication Enum."""
 
     assert isinstance(data.value, str)
@@ -130,7 +130,7 @@ def test_communication_enum(data):
     "data",
     list(Occupation),
 )
-def test_occupation_enum(data):
+def test_occupation_enum(data: Occupation) -> None:
     """Testing Occupation Enum."""
 
     assert isinstance(data.value, str)
@@ -140,7 +140,7 @@ def test_occupation_enum(data):
     "data",
     list(Country),
 )
-def test_country_enum(data):
+def test_country_enum(data: Country) -> None:
     """Testing Country Enum."""
 
     assert isinstance(data.value, tuple)
@@ -152,7 +152,7 @@ def test_country_enum(data):
     "data",
     list(Language),
 )
-def test_language_enum(data):
+def test_language_enum(data: Language) -> None:
     """Testing Language Enum."""
 
     assert isinstance(data.value, tuple)

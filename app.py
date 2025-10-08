@@ -3,9 +3,11 @@
 from services.cli import Cli
 
 
-def main():
-    """CLI Interface."""
 
+
+def main() -> None:
+    """CLI Interface."""
+    
     cli = Cli()
     cli.run()
 

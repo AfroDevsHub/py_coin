@@ -27,7 +27,7 @@ from lib.utils.constants.users import (
 from models.user.profiles import UserProfile
 from serialisers.user.profiles import UserProfileSerialiser
 from models import ENGINE
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def __read_file__():

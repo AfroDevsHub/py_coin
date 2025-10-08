@@ -20,7 +20,7 @@ class ContractSerialiser(Contract, BaseSerialiser):
     __SERIALISER_EXCEPTION__ = ContractError
     __MUTABLE_KWARGS__: list[str] = ["title", "description", "contract_status"]
 
-    def get_contract(self, contract_id: str) -> dict:
+    def get_contract(self, contract_id: str) -> dict[str, Any]:
         """CRUD Operation: Read Contract."""
 
         with Session(ENGINE) as session:

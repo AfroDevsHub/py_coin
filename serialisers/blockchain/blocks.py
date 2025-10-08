@@ -1,6 +1,6 @@
 """Blocks: Serialiser for Block Model."""
 
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID
 from sqlalchemy import cast, select, UUID as uuid
 from sqlalchemy.orm import Session
@@ -24,7 +24,7 @@ class BlockSerialiser(Block, BaseSerialiser):
         block_id: Optional[UUID] = None,
         transaction_id: Optional[UUID] = None,
         contract_id: Optional[UUID] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """CRUD Operation: Read Block."""
 
         with Session(ENGINE) as session:

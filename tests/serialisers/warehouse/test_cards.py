@@ -17,7 +17,7 @@ from lib.utils.constants.users import Status, CardType
 from models import ENGINE
 from models.warehouse.cards import Card
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

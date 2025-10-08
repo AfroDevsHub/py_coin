@@ -12,7 +12,7 @@ from models.blockchain.contracts import Contract
 from serialisers.blockchain.contracts import ContractSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

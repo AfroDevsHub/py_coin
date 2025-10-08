@@ -151,7 +151,7 @@ class BlockChainService:
     @classmethod
     def __create_new_block__(
         cls, transaction_id: Optional[UUID] = None, contract_id: Optional[UUID] = None
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Creates a New Block - Transaction or Contract."""
 
         if transaction_id and contract_id:

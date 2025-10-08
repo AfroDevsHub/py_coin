@@ -1,5 +1,6 @@
 """Validators: Testing Transaction Module."""
 
+from typing import Any
 from pytest import mark, raises
 from lib.exceptions import TransactionError
 from lib.utils.constants.transactions import TransactionStatus
@@ -7,13 +8,14 @@ from lib.validators.transactions import (
     validate_transaction_amount,
     validate_transaction_status,
 )
+from models.blockchain.transactions import Transaction
 
 
 @mark.parametrize(
     "amount",
     [5.0, 55.0, 1500.0],
 )
-def test_validate_transaction_amount(get_transactions, amount):
+def test_validate_transaction_amount(get_transactions: Transaction, amount: float) -> None:
     """Tests Validating Transaction Amount."""
 
     draft_transaction = get_transactions[0]
@@ -24,7 +26,7 @@ def test_validate_transaction_amount(get_transactions, amount):
     "amount",
     [5.0, 55.0, 1500.0],
 )
-def test_invalidate_transaction_amount_invalid(get_transactions, amount):
+def test_invalidate_transaction_amount_invalid(get_transactions: Transaction, amount: float) -> None:
     """Tests Invalidating Transaction Amount."""
 
     for transaction in get_transactions[1:]:
@@ -36,7 +38,7 @@ def test_invalidate_transaction_amount_invalid(get_transactions, amount):
     "amount",
     [-5.0, "55.0", 0.0, "Hello World", 5],
 )
-def test_invalidate_transaction_status(get_transactions, amount):
+def test_invalidate_transaction_status(get_transactions: Transaction, amount: Any) -> None:
     """Tests Invalidating Transaction Amount."""
 
     for transaction in get_transactions[1:]:
@@ -48,7 +50,7 @@ def test_invalidate_transaction_status(get_transactions, amount):
     "status",
     [TransactionStatus.APPROVED, TransactionStatus.REJECTED],
 )
-def test_invalidate_draft_transaction_status(get_transactions, status):
+def test_invalidate_draft_transaction_status(get_transactions: Transaction, status: TransactionStatus) -> None:
     """Tests Invalidating Draft Transaction Status."""
 
     draft_transaction = get_transactions[0]
@@ -59,7 +61,7 @@ def test_invalidate_draft_transaction_status(get_transactions, status):
     "status",
     [TransactionStatus.TRANSFERED, TransactionStatus.INSUFFICIENT],
 )
-def test_validate_transferred_transaction_status(get_transactions, status):
+def test_validate_transferred_transaction_status(get_transactions: Transaction, status: TransactionStatus) -> None:
     """Tests Validating Transferred Transaction Status."""
 
     approved_transaction = get_transactions[1]
@@ -70,7 +72,7 @@ def test_validate_transferred_transaction_status(get_transactions, status):
     "status",
     [TransactionStatus.REVERSED],
 )
-def test_validate_reversed_transaction_status(get_transactions, status):
+def test_validate_reversed_transaction_status(get_transactions: Transaction, status: TransactionStatus) -> None:
     """Tests Invalidating Reversed Transaction Status."""
 
     approved_transaction = get_transactions[2]
@@ -81,7 +83,7 @@ def test_validate_reversed_transaction_status(get_transactions, status):
     "status",
     list(TransactionStatus),
 )
-def test_invalidate_approved_transaction_status(get_transactions, status):
+def test_invalidate_approved_transaction_status(get_transactions: Transaction, status: TransactionStatus) -> None:
     """Tests Invalidating Unapproved Transaction Status."""
 
     rejected_transaction = get_transactions[2]

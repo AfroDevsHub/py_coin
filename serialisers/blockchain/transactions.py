@@ -25,7 +25,7 @@ class TransactionSerialiser(Transaction, BaseSerialiser):
         "transaction_status",
     ]
 
-    def get_transaction(self, transaction_id: str) -> dict:
+    def get_transaction(self, transaction_id: str) -> dict[str, Any]:
         """CRUD Operation: Read Transaction."""
 
         with Session(ENGINE) as session:

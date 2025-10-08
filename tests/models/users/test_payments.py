@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from lib.utils.constants.users import Status
 from models import ENGINE
 from models.user.payments import PaymentProfile
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_user_invalid_no_args():

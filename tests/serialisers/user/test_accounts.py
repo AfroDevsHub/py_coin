@@ -13,7 +13,7 @@ from models.user.accounts import Account
 from serialisers.user.accounts import AccountSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

@@ -29,7 +29,7 @@ class SettingsProfileSerialiser(SettingsProfile, BaseSerialiser):
         "communication_status",
     ]
 
-    def get_settings_profile(self, settings_id: UUID) -> dict:
+    def get_settings_profile(self, settings_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get Settings."""
 
         with Session(ENGINE) as session:

@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from lib.utils.constants.users import CardType
 from models import ENGINE
 from models.warehouse.cards import Card
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 
 
 def test_card_invalid_no_args():

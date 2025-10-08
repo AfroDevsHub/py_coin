@@ -178,7 +178,7 @@ class Cli:
             cls.__add_args__(subparser, cls.__DATA_ARGS__)
 
     @classmethod
-    def args_parser(cls, args: Args):
+    def args_parser(cls, args: Args) -> dict[str, Any]:
         required_options = {
             "transaction": args.transaction,
             "contract": args.contract,
@@ -281,7 +281,7 @@ class Cli:
         return "Invalid Command - Try *help*"
 
     @classmethod
-    def run(cls):
+    def run(cls) -> None:
         while True:
             try:
                 # Capture input from standard input
@@ -306,12 +306,12 @@ class Cli:
                 continue
 
     @classmethod
-    def kill(cls):
+    def kill(cls) -> None:
         print("PYCoin CLI Terminated.")
         cls.ACTIVE = False
 
     @classmethod
-    def help(cls):
+    def help(cls) -> str:
         cls.parser.print_help()
         result = []
         args = {
@@ -353,13 +353,13 @@ class Cli:
         )
 
     @staticmethod
-    def __add_args__(subparser, args):
+    def __add_args__(subparser: ArgumentParser, args: dict[str, Any]) -> None:
         """Add Subparser's Args for Help Page."""
         for _, arg in args.items():
             subparser.add_argument(*arg["args"], **arg["kwargs"])
 
     @staticmethod
-    def __get_arg_data__(model: str) -> dict:
+    def __get_arg_data__(model: str) -> dict[str, Any]:
         models = {
             "user": Logindata,
             "profile": ProfileData,
@@ -381,7 +381,7 @@ class Cli:
         return data
 
     @staticmethod
-    def get_input_for_annotation(field_name: str, annotation: Type) -> Any:
+    def get_input_for_annotation(field_name: str, annotation: Any) -> Any:
         models = {
             "user": UserData,
             "profile": ProfileData,

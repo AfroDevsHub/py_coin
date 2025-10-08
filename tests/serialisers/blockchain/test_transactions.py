@@ -10,7 +10,7 @@ from models.blockchain.transactions import Transaction
 from serialisers.blockchain.transactions import TransactionSerialiser
 from models import ENGINE
 from services.authentication import AbstractService
-from tests.conftest import run_test_teardown
+from conftest import run_test_teardown
 from tests.test_utils.utils import check_invalid_ids
 
 

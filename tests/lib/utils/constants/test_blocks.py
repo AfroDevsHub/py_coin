@@ -9,7 +9,7 @@ from lib.utils.constants.blocks import BlockType
     "data",
     list(BlockType),
 )
-def test_block_status_enum(data):
+def test_block_status_enum(data: BlockType) -> None:
     """Testing Block Type Enum."""
 
     assert isinstance(data.value, str)

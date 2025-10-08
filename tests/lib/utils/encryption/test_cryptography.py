@@ -1,5 +1,6 @@
 """Encryption: Testing Cryptography Module."""
 
+from typing import Any
 from uuid import uuid4
 from pytest import mark, raises
 from config import AppConfig
@@ -15,7 +16,7 @@ from lib.utils.encryption.cryptography import encrypt_data, decrypt_data
         str(123456789),
     ],
 )
-def test_encrypt_data(data):
+def test_encrypt_data(data: Any) -> None:
     """Test Encrypted Data."""
 
     assert encrypt_data(data.encode()) is not None
@@ -31,7 +32,7 @@ def test_encrypt_data(data):
         123456789,
     ],
 )
-def test_invalid_encrypt_data(data):
+def test_invalid_encrypt_data(data: Any) -> None:
     """Test Encrypted Data."""
 
     with raises((UserError, AttributeError)):
@@ -46,7 +47,7 @@ def test_invalid_encrypt_data(data):
         str(123456789),
     ],
 )
-def test_decrypt_data(data):
+def test_decrypt_data(data: Any) -> None:
     """Test Decrypted Data."""
 
     fernet = AppConfig().fernet
@@ -64,10 +65,10 @@ def test_decrypt_data(data):
         123456789,
     ],
 )
-def test_invalid_decrypt_data(data):
+def test_invalid_decrypt_data(data: Any) -> None:
     """Test Decrypted Data."""
 
     with raises((UserError, AttributeError)):
         fernet = AppConfig().fernet
         encrypted_data = fernet.encrypt(data.encode()).decode()
-        decrypt_data(encrypted_data.encode())
+        decrypt_data(encrypted_data)

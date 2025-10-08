@@ -26,7 +26,7 @@ class LoginHistorySerialiser(LoginHistory, BaseSerialiser):
         "authentication_token",
     ]
 
-    def get_login_history(self, login_id: UUID) -> dict:
+    def get_login_history(self, login_id: UUID) -> dict[str, Any]:
         """CRUD Operation: Get Login History."""
 
         with Session(ENGINE) as session:

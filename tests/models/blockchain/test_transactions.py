@@ -8,10 +8,11 @@ from sqlalchemy.exc import IntegrityError
 from lib.utils.constants.transactions import TransactionStatus
 from models import ENGINE
 from models.blockchain.transactions import Transaction
-from tests.conftest import run_test_teardown
+from models.user.payments import PaymentProfile
+from conftest import run_test_teardown
 
 
-def test_transaction_invalid_no_args():
+def test_transaction_invalid_no_args() -> None:
     """Testing Transaction With Missing Attributes."""
 
     with Session(ENGINE) as session:
@@ -21,17 +22,17 @@ def test_transaction_invalid_no_args():
             session.commit()
 
 
-def test_transaction_invalid_args():
+def test_transaction_invalid_args() -> None:
     """Testing Constructor, for Invalid Arguments."""
 
     with Session(ENGINE) as session:
         with raises(TypeError):
-            transaction = Transaction("email", "password")
+            transaction = Transaction("email", "password") # type: ignore
             session.add(transaction)
             session.commit()
 
 
-def test_transaction_valid(get_payments):
+def test_transaction_valid(get_payments: list[PaymentProfile]) -> None:
     """Testing a Valid Transaction Constructor, with Required Arguments."""
 
     for sender, receiver in zip(get_payments, list(reversed(get_payments))):
@@ -48,4 +49,4 @@ def test_transaction_valid(get_payments):
             assert transaction.amount == 5.0
             assert isinstance(transaction.to_dict(), dict)
 
-            run_test_teardown({transaction}, session)
+            run_test_teardown(transaction, session)
