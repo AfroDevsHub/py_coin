@@ -2,8 +2,8 @@
 
 from uuid import uuid4
 from sqlalchemy import UUID, Column, DateTime, Enum, Float, ForeignKey, String, text
-from lib.utils.constants.users import Status
-from models import Base
+from src.lib.utils.constants.users import Status
+from src.models import Base
 
 
 class PaymentProfile(Base):

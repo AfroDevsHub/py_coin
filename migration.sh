@@ -1,8 +1,10 @@
 #!/bin/bash
 
+fastapi run --reload &
+
 # Arguments: host and port
-host="$1"
-port="$2"
+host="$POSTGRES_HOST"
+port="$POSTGRES_PORT"
 
 # Wait for the specified host and port to be available
 until nc -z "$host" "$port"; do

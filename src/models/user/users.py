@@ -5,9 +5,9 @@ from uuid import uuid4
 from sqlalchemy import UUID, Column, DateTime, Enum, String, text
 from sqlalchemy.orm import relationship
 
-from lib.utils.constants.users import Role, Status
-from models import Base
-from models.warehouse.logins import LoginHistory
+from src.models import Base
+from src.lib.utils.constants.users import Role, Status
+from src.models.warehouse.logins import LoginHistory
 
 
 class User(Base):

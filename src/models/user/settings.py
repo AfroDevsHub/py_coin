@@ -12,14 +12,14 @@ from sqlalchemy import (
     text,
 )
 
-from lib.utils.constants.users import (
+from src.lib.utils.constants.users import (
     Communication,
     DataSharingPreference,
     Verification,
     ProfileVisibility,
     Theme,
 )
-from models import Base
+from src.models import Base
 
 
 class SettingsProfile(Base):

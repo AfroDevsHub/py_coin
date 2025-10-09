@@ -13,8 +13,8 @@ from sqlalchemy import (
     text,
 )
 
-from lib.utils.constants.contracts import ContractStatus
-from models import Base
+from src.lib.utils.constants.contracts import ContractStatus
+from src.models import Base
 
 
 class Contract(Base):

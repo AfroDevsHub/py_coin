@@ -3,8 +3,8 @@
 from uuid import uuid4
 from sqlalchemy import UUID, Boolean, Column, DateTime, ForeignKey, String, text, Enum
 
-from lib.utils.constants.users import Country, LoginMethod
-from models import Base
+from src.lib.utils.constants.users import Country, LoginMethod
+from src.models import Base
 
 
 class LoginHistory(Base):

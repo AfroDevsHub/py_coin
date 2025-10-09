@@ -12,8 +12,8 @@ from sqlalchemy import (
     text,
 )
 
-from lib.utils.constants.blocks import BlockType
-from models import Base
+from src.lib.utils.constants.blocks import BlockType
+from src.models import Base
 
 
 class Block(Base):

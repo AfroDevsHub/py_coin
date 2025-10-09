@@ -3,11 +3,11 @@
 from uuid import uuid4
 from sqlalchemy import UUID, Column, DateTime, text, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from lib.utils.constants.users import Status
-from models import Base
-from models.user.payments import PaymentProfile
-from models.user.profiles import UserProfile
-from models.user.settings import SettingsProfile
+from src.lib.utils.constants.users import Status
+from src.models.user.payments import PaymentProfile
+from src.models.user.profiles import UserProfile
+from src.models.user.settings import SettingsProfile
+from src.models import Base
 
 
 class Account(Base):

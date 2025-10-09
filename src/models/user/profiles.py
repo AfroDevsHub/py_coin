@@ -14,7 +14,7 @@ from sqlalchemy import (
     text,
     Enum,
 )
-from lib.utils.constants.users import (
+from src.lib.utils.constants.users import (
     Country,
     Language,
     Occupation,
@@ -22,7 +22,7 @@ from lib.utils.constants.users import (
     Interest,
     Status,
 )
-from models import Base
+from src.models import Base
 
 
 class UserProfile(Base):

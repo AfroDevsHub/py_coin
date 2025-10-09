@@ -3,8 +3,8 @@
 from datetime import date
 from uuid import uuid4
 from sqlalchemy import UUID, Column, Date, DateTime, Enum, String, text
-from lib.utils.constants.users import CardType, Status
-from models import Base
+from src.lib.utils.constants.users import CardType, Status
+from src.models import Base
 
 
 class Card(Base):

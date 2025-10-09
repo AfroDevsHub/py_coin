@@ -1,0 +1,27 @@
+FROM public.ecr.aws/lambda/python:3.10
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# Install system dependencies required for lxml
+RUN yum update -y && \
+    yum install -y libxml2-devel libxslt-devel gcc && \
+    yum clean all
+
+COPY requirements.txt ${LAMBDA_TASK_ROOT}
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# TODO: this full copy is copying everything in the project folder, this can be improved.
+COPY . ${LAMBDA_TASK_ROOT}
+
+COPY --from=public.ecr.aws/datadog/lambda-extension:68 /opt/. /opt/
+
+# Download and install the Lambda Insights extension for x86_64 architecture
+RUN curl -O https://lambda-insights-extension.s3.ap-northeast-1.amazonaws.com/amazon_linux/lambda-insights-extension.rpm && \
+    rpm -U lambda-insights-extension.rpm && \
+    rm -f lambda-insights-extension.rpm
+
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=8080
+
+CMD [ "datadog_lambda.handler.handler" ]

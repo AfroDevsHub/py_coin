@@ -4,12 +4,12 @@ from datetime import date, datetime
 
 from typing import Any
 from uuid import UUID
-
-from lib.utils.constants.users import DateFormat, DateTimeFormat
+from sqlalchemy.orm import Session
 from sqlalchemy import Select
 
-from sqlalchemy.orm import Session
-from models import ENGINE
+from src.models import ENGINE
+from src.lib.utils.constants.users import DateFormat, DateTimeFormat
+
 class BaseModel:
     """A Base/Abstract Model."""
 
@@ -43,12 +43,3 @@ class BaseModel:
                 data[key.name] = value
         return data
     
-    def test(self) -> bool:
-        try:
-            with Session(ENGINE) as session:
-                data = Select(self.__class__).where(1 == 1)
-                session.execute(data)
-            return True
-        except BaseException as e:
-            print(e)
-            return False

@@ -5,8 +5,8 @@ from uuid import uuid4, UUID as uuid
 
 from sqlalchemy import UUID, Column, DateTime, Enum, Float, ForeignKey, String, text
 
-from lib.utils.constants.transactions import TransactionStatus
-from models import Base
+from src.lib.utils.constants.transactions import TransactionStatus
+from src.models import Base
 
 
 class Transaction(Base):

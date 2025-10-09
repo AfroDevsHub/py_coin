@@ -18,6 +18,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Set PYTHONPATH
 RUN export PYTHONPATH=${PYTHONPATH}:${PWD}
 
-# Command to run Alembic migrations
-ENTRYPOINT ["./migration.sh"]
-
+CMD ["pytest", "src/tests", "--vv", "--maxfail=1", "--disable-warnings"]
