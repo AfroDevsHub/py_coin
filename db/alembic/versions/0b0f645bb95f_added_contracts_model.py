@@ -11,7 +11,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from lib.utils.constants.contracts import ContractStatus
+from src.lib.utils.constants.contracts import ContractStatus
 
 # revision identifiers, used by Alembic.
 revision: str = "0b0f645bb95f"

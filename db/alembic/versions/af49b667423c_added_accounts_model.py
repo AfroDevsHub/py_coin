@@ -12,7 +12,7 @@ from uuid import uuid4
 from alembic import op
 import sqlalchemy as sa
 
-from lib.utils.constants.users import Status
+from src.lib.utils.constants.users import Status
 
 # revision identifiers, used by Alembic.
 revision: str = "af49b667423c"

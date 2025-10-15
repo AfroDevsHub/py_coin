@@ -12,7 +12,7 @@ from uuid import uuid4
 from alembic import op
 import sqlalchemy as sa
 
-from lib.utils.constants.users import Country, LoginMethod
+from src.lib.utils.constants.users import Country, LoginMethod
 
 
 # revision identifiers, used by Alembic.

@@ -1,34 +1,29 @@
-# Use an appropriate base image for your Flask application
-FROM python:3.12
+FROM public.ecr.aws/lambda/python:3.10
 
 # Set the working directory within the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Install required packages
-RUN apt-get update \
-    && apt-get install -y \
-    openssh-client \
-    git \
-    postgresql-client \
-    netcat-openbsd \
-    && apt-get clean
+RUN yum update -y
+RUN yum install -y nmap-ncat
+RUN yum clean all
 
 # Copy the necessary files
 COPY . .
+    
+COPY migration.sh ./migration.sh
+COPY version.py ./src/version.py
 
 # Copy the wait-for-it script
-RUN chmod +x /app/db/test_db_migration.sh
+RUN chmod +x ./migration.sh
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Set environment variables
-COPY test.env .env
-# Load environment variables from .env file
-RUN export $(cat .env | xargs)
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Set PYTHONPATH
-ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+RUN export PYTHONPATH=${PYTHONPATH}:${PWD}
+
+EXPOSE 8080
 
 # Command to run Alembic migrations
-CMD ["sh", "-c", "/app/db/test_db_migration.sh postgres 5432"]
+ENTRYPOINT ["./migration.sh"]
+

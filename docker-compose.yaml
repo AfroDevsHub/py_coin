@@ -1,28 +1,66 @@
-version: '3.12'
-
 services:
-  postgres:
-    image: postgres:latest
-    restart: always
-    container_name: my_postgres_db
-    environment:
-      POSTGRES_DB: py_coin_db
-      POSTGRES_USER: py_user
-      POSTGRES_PASSWORD: py_user_password
-    ports:
-      - '5432:5432'
-
-  migrations:
+  py-coin-api:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile
-    depends_on:
-      - postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./src/:/usr/src/app/src
+      - ./version.py:/usr/src/app/src/version.py
+      - ./db:/usr/src/app/db
+    networks:
+      - py-coin-network
+
+  test-py-coin-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    env_file:
+      - test.env
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./version.py:/usr/src/app/src/version.py
+      - ./db:/usr/src/app/db
+    networks:
+      - py-coin-network
+  
+  py-coin-api-database:
+    image: public.ecr.aws/docker/library/postgres:15.3
     environment:
-      POSTGRES_DB: py_coin_db
-      POSTGRES_USER: py_user
-      POSTGRES_PASSWORD: py_user_password
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-        
-    
+      POSTGRES_USER: pycoinuser
+      POSTGRES_PASSWORD: pycoinpassword
+      POSTGRES_DB: pycoindb
+    networks:
+      - py-coin-network
+    ports:
+      - "5432:5432"
+
+  # localstack:
+  #   image: localstack/localstack
+  #   ports:
+  #     - "4566:4566"            # LocalStack Gateway
+  #   environment:
+  #     - services=s3,lambda,secretsmanager
+  #     - DEBUG=true
+  #     - AWS_ACCESS_KEY_ID=localstack_access_key
+  #     - AWS_SECRET_ACCESS_KEY=localstack_secret_key
+  #     - AWS_DEFAULT_REGION=us-east-1
+  #     - AWS_DEFAULT_OUTPUT=json
+  #     - AWS_ENDPOINT_URL=http://localhost:4566
+  #   volumes:
+  #     - "./localstack_entrypoint.sh:/docker-entrypoint-initaws.d/localstack_entrypoint.sh"
+  #     - ./app/tests/lambda_function.py:/usr/src/lambda_function.py
+  #     - ./localstack/secretsmanager:/docker-entrypoint-initaws.d
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #   networks:
+  #     - faas
+  
+networks:
+  py-coin-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
