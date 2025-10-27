@@ -10,11 +10,11 @@ psycopg2-binary==2.9.9
 pydantic==2.11.3
 pydantic_core==2.33.1
 PyInputPlus==0.2.12
-pytest==8.1.0
 sqlalchemy==2.0.28
-typing_extensions==4.13.2
 pyjwt==2.10.1
 ruff==0.12.9
 uvicorn==0.35.0
 inquirer==3.4.1
 requests==2.32.5
+pytest==8.4.2
+typing-extensions==4.15.0
